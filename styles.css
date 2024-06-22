@@ -1,3 +1,218 @@
+body {
+    margin: 0;
+    font-family: 'Poppins', Arial, sans-serif;
+    background-color: #f4f4f4;
+    overflow-x: hidden;
+}
+
+body.dark-mode {
+    background-color: #121212;
+    color: #ffffff;
+}
+
+body.dark-mode .app {
+    background-color: #1e1e1e;
+    border-color: #333;
+}
+
+body.dark-mode .app-header {
+    background-color: #333;
+    color: #ffffff;
+}
+
+body.dark-mode .app-nav {
+    background-color: #333;
+    border-top-color: #444;
+}
+
+body.dark-mode .feed-item, body.dark-mode .chat-item, body.dark-mode .settings-item {
+    background-color: #2a2a2a;
+    border-color: #444;
+    color: #ffffff;
+}
+
+body.dark-mode .feed-item h3, body.dark-mode .chat-item h3 {
+    color: #ff5252;
+}
+
+body.dark-mode .settings-item {
+    background-color: #2a2a2a;
+    border-color: #444;
+}
+
+.app {
+    display: flex;
+    flex-direction: column;
+    max-width: 100%;
+    margin: 0 auto;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    background-color: white;
+    animation: fadeIn 1s ease-in-out;
+    overflow-y: auto; /* Make the app scrollable */
+    height: 100vh; /* Full viewport height */
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.app-header {
+    background-color: #e53935;
+    color: white;
+    padding: 10px;
+    text-align: left;
+    display: flex;
+    align-items: center;
+}
+
+.app-header h1 {
+    margin: 0;
+    font-family: 'Lobster', cursive;
+    font-size: 28px;
+}
+
+.app-nav {
+    display: flex;
+    justify-content: space-around;
+    background-color: #f1f1f1;
+    padding: 10px;
+    animation: slideIn 0.5s ease-in-out;
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    border-top: 1px solid #ccc;
+    box-sizing: border-box; /* Ensure it fits within the app width */
+}
+
+@keyframes slideIn {
+    from { transform: translateY(100%); }
+    to { transform: translateY(0); }
+}
+
+.app-nav button {
+    background: none;
+    border: none;
+    color: #e53935;
+    font-size: 18px;
+    cursor: pointer;
+    padding: 5px 10px;
+    transition: color 0.3s ease-in-out;
+}
+
+.app-nav button:hover {
+    color: #b71c1c;
+}
+
+.app-main {
+    padding: 10px;
+    padding-bottom: 60px; /* Extra space for fixed nav */
+    overflow-y: auto; /* Make the main content scrollable */
+    flex: 1;
+}
+
+.feed-item, .chat-item, .settings-item {
+    display: flex;
+    flex-direction: column; /* Stack content vertically on smaller screens */
+    align-items: flex-start;
+    background-color: #fff;
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+}
+
+.feed-item:hover, .chat-item:hover, .settings-item:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 15px rgba(0, 0, 0, 0.2);
+}
+
+.feed-item img.profile-pic, .chat-item img.profile-pic {
+    border-radius: 50%;
+    margin-right: 10px;
+    width: 40px;
+    height: 40px;
+}
+
+.post-content, .chat-content {
+    flex: 1;
+    width: 100%;
+}
+
+.feed-item h3, .chat-item h3 {
+    margin: 0 0 5px;
+    color: #e53935;
+}
+
+.feed-item p, .chat-item p {
+    margin: 0;
+}
+
+.post-image {
+    width: 100%;
+    margin-top: 10px;
+    border-radius: 5px;
+}
+
+.post-actions {
+    display: flex;
+    justify-content: space-around;
+    margin-top: 10px;
+}
+
+.post-actions button {
+    background: none;
+    border: none;
+    color: #e53935;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.post-actions button:hover {
+    color: #b71c1c;
+}
+
+.comment {
+    margin-top: 10px;
+    padding-left: 10px;
+}
+
+.settings-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    margin-bottom: 10px;
+    background-color: #fff;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+}
+
+/* Responsive design for smaller screens */
+@media (max-width: 768px) {
+    .app-header h1 {
+        font-size: 24px;
+    }
+
+    .app-nav button {
+        font-size: 16px;
+    }
+
+    .feed-item, .chat-item, .settings-item {
+        padding: 8px;
+    }
+
+    .post-actions button {
+        font-size: 12px;
+    }
+}
+
 /* Add styles for the comment section */
 .comment-section {
     margin-top: 20px;
