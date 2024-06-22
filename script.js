@@ -32,4 +32,4 @@ document.addEventListener('DOMContentLoaded', () => {
         document.body.classList.add('dark-mode');
     }
     loadContent('home.html'); // Load the home content by default
-})
+});
