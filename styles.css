@@ -5,29 +5,63 @@ body {
     overflow-x: hidden;
 }
 
-/* Color Schemes */
-body.default-scheme {
-    --primary-color: #e53935;
+body.dark-mode {
+    background-color: #121212;
+    color: #ffffff;
 }
 
-body.red-scheme {
-    --primary-color: #e53935;
+body.dark-mode .app {
+    background-color: #1e1e1e;
+    border-color: #333;
 }
 
-body.blue-scheme {
-    --primary-color: #1e88e5;
+body.dark-mode .app-header {
+    background-color: #333;
+    color: #ffffff;
 }
 
-body.green-scheme {
-    --primary-color: #43a047;
+body.dark-mode .app-nav {
+    background-color: #333;
+    border-top-color: #444;
 }
 
-body.purple-scheme {
-    --primary-color: #8e24aa;
+body.dark-mode .feed-item, body.dark-mode .chat-item, body.dark-mode .settings-item {
+    background-color: #2a2a2a;
+    border-color: #444;
+    color: #ffffff;
+}
+
+body.dark-mode .feed-item h3, body.dark-mode .chat-item h3 {
+    color: #ff5252;
+}
+
+body.dark-mode .settings-item {
+    background-color: #2a2a2a;
+    border-color: #444;
+}
+
+.app {
+    display: flex;
+    flex-direction: column;
+    max-width: 100%;
+    margin: 0 auto;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    background-color: white;
+    animation: fadeIn 1s ease-in-out;
+    overflow-y: auto; /* Make the app scrollable */
+    height: 100vh; /* Full viewport height */
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
 }
 
 .app-header {
-    background-color: var(--primary-color);
+    background-color: var(--primary-color, #e53935);
     color: white;
     padding: 10px;
     text-align: left;
@@ -54,10 +88,15 @@ body.purple-scheme {
     box-sizing: border-box; /* Ensure it fits within the app width */
 }
 
+@keyframes slideIn {
+    from { transform: translateY(100%); }
+    to { transform: translateY(0); }
+}
+
 .app-nav button {
     background: none;
     border: none;
-    color: var(--primary-color);
+    color: var(--primary-color, #e53935);
     font-size: 18px;
     cursor: pointer;
     padding: 5px 10px;
@@ -107,7 +146,7 @@ body.purple-scheme {
 
 .feed-item h3, .chat-item h3 {
     margin: 0 0 5px;
-    color: var(--primary-color);
+    color: var(--primary-color, #e53935);
 }
 
 .feed-item p, .chat-item p {
@@ -129,7 +168,7 @@ body.purple-scheme {
 .post-actions button {
     background: none;
     border: none;
-    color: var(--primary-color);
+    color: var(--primary-color, #e53935);
     cursor: pointer;
     font-size: 14px;
 }
@@ -153,6 +192,29 @@ body.purple-scheme {
     margin-bottom: 10px;
     background-color: #fff;
     box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+}
+
+.circle-list {
+    list-style-type: none;
+    padding: 0;
+}
+
+.circle-list li {
+    background-color: #e3f2fd;
+    border: 1px solid #90caf9;
+    border-radius: 5px;
+    padding: 10px;
+    margin: 5px 0;
+    cursor: pointer;
+    transition: background-color 0.3s ease-in-out;
+}
+
+.circle-list li:hover {
+    background-color: #bbdefb;
+}
+
+.circle-list li:active {
+    background-color: #64b5f6;
 }
 
 /* Responsive design for smaller screens */
