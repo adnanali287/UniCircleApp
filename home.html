@@ -1,25 +1,61 @@
-<h2>Home Feed</h2>
-<div class="feed-item">
-    <img src="profile1.jpg" alt="Profile" class="profile-pic">
-    <div class="post-content">
-        <h3>John Doe</h3>
-        <p>Join us for the Welcome Week festivities! Lots of fun activities and events to help you settle in.</p>
-        <div class="post-actions">
-            <button class="like-btn"><i class="fas fa-thumbs-up"></i> Like</button>
-            <button class="comment-btn" onclick="loadContent('comments1.html')"><i class="fas fa-comment"></i> Comment</button>
-            <button class="share-btn"><i class="fas fa-share"></i> Share</button>
-        </div>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home - UniCircle</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lobster&display=swap">
+    <script>
+        // Redirect to login if not authenticated
+        window.onload = function() {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                window.location.href = 'index.html';
+            }
+        }
+    </script>
+</head>
+<body>
+    <div class="app">
+        <header class="app-header">
+            <h1>UniCircle</h1>
+        </header>
+        <main class="app-main" id="app-content">
+            <h2>Home Feed</h2>
+            <div class="feed-item">
+                <img src="profile1.jpg" alt="Profile" class="profile-pic">
+                <div class="post-content">
+                    <h3>John Doe</h3>
+                    <p>Join us for the Welcome Week festivities! Lots of fun activities and events to help you settle in.</p>
+                    <div class="post-actions">
+                        <button class="like-btn"><i class="fas fa-thumbs-up"></i> Like</button>
+                        <button class="comment-btn" onclick="loadContent('comments1.html')"><i class="fas fa-comment"></i> Comment</button>
+                        <button class="share-btn"><i class="fas fa-share"></i> Share</button>
+                    </div>
+                </div>
+            </div>
+            <div class="feed-item">
+                <img src="profile2.jpg" alt="Profile" class="profile-pic">
+                <div class="post-content">
+                    <h3>Library</h3>
+                    <p>The library is now open 24/7 to accommodate all your study needs.</p>
+                    <div class="post-actions">
+                        <button class="like-btn"><i class="fas fa-thumbs-up"></i> Like</button>
+                        <button class="comment-btn" onclick="loadContent('comments2.html')"><i class="fas fa-comment"></i> Comment</button>
+                        <button class="share-btn"><i class="fas fa-share"></i> Share</button>
+                    </div>
+                </div>
+            </div>
+        </main>
+        <nav class="app-nav">
+            <button onclick="loadContent('home.html')"><i class="fas fa-home"></i></button>
+            <button onclick="loadContent('circles.html')"><i class="fas fa-users"></i></button>
+            <button onclick="loadContent('messages.html')"><i class="fas fa-envelope"></i></button>
+            <button onclick="loadContent('more.html')"><i class="fas fa-ellipsis-h"></i></button>
+        </nav>
     </div>
-</div>
-<div class="feed-item">
-    <img src="profile2.jpg" alt="Profile" class="profile-pic">
-    <div class="post-content">
-        <h3>Library</h3>
-        <p>The library is now open 24/7 to accommodate all your study needs.</p>
-        <div class="post-actions">
-            <button class="like-btn"><i class="fas fa-thumbs-up"></i> Like</button>
-            <button class="comment-btn" onclick="loadContent('comments2.html')"><i class="fas fa-comment"></i> Comment</button>
-            <button class="share-btn"><i class="fas fa-share"></i> Share</button>
-        </div>
-    </div>
-</div>
+    <script src="script.js"></script>
+</body>
+</html>
