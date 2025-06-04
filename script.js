@@ -105,6 +105,14 @@ if (document.readyState === 'loading') {
 const API_BASE = 'http://localhost:3000/api';
 
 // Helper functions for local authentication with server fallback
+function getLocalUsers() {
+    return JSON.parse(localStorage.getItem('localUsers') || '[]');
+}
+
+function saveLocalUsers(users) {
+    localStorage.setItem('localUsers', JSON.stringify(users));
+}
+
 async function hashPassword(password) {
     try {
         if (window.crypto && window.crypto.subtle) {
@@ -124,8 +132,14 @@ async function hashPassword(password) {
 }
 
 async function apiGetUsers() {
-    const res = await fetch(`${API_BASE}/users`);
-    return await res.json();
+    try {
+        const res = await fetch(`${API_BASE}/users`);
+        if (!res.ok) throw new Error('Server error');
+        return await res.json();
+    } catch (err) {
+        console.warn('Falling back to local users', err);
+        return getLocalUsers();
+    }
 }
 
 function setCurrentUser(email) {
@@ -145,11 +159,21 @@ async function apiGetCurrentUser() {
 }
 
 async function apiUpdateCurrentUser(updated) {
-    await fetch(`${API_BASE}/profile`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(updated)
-    });
+    try {
+        await fetch(`${API_BASE}/profile`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(updated)
+        });
+    } catch (err) {
+        console.warn('Profile update failed, saving locally', err);
+        const users = getLocalUsers();
+        const idx = users.findIndex(u => u.email === updated.email);
+        if (idx !== -1) {
+            users[idx] = { ...users[idx], ...updated };
+            saveLocalUsers(users);
+        }
+    }
 }
 
 // Handle registration
@@ -177,8 +201,22 @@ if (document.getElementById('registerForm')) {
                 window.location.href = 'index.html';
             }, 500);
         } catch (err) {
-            console.error(err);
-            document.getElementById('registerMessage').textContent = 'Registration failed.';
+            console.warn('Server register failed, using local storage', err);
+            const name = document.getElementById('name').value.trim();
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value;
+            const users = getLocalUsers();
+            if (users.some(u => u.email === email)) {
+                document.getElementById('registerMessage').textContent = 'Email already registered.';
+            } else {
+                const passwordHash = await hashPassword(password);
+                users.push({ name, email, passwordHash, bio: '', image: '' });
+                saveLocalUsers(users);
+                document.getElementById('registerMessage').textContent = 'Registration successful! Please log in.';
+                setTimeout(() => {
+                    window.location.href = 'index.html';
+                }, 500);
+            }
         } finally {
             hideLoader();
         }
@@ -207,8 +245,17 @@ if (document.getElementById('loginForm')) {
                 document.getElementById('loginMessage').textContent = data.error || 'Invalid credentials.';
             }
         } catch (err) {
-            console.error(err);
-            document.getElementById('loginMessage').textContent = 'Login failed.';
+            console.warn('Server login failed, using local storage', err);
+            const email = document.getElementById('loginEmail').value.trim();
+            const password = document.getElementById('loginPassword').value;
+            const users = getLocalUsers();
+            const user = users.find(u => u.email === email);
+            if (user && (await hashPassword(password)) === user.passwordHash) {
+                setCurrentUser(email);
+                window.location.href = 'home.html';
+            } else {
+                document.getElementById('loginMessage').textContent = 'Invalid credentials.';
+            }
         } finally {
             hideLoader();
         }
