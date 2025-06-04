@@ -416,3 +416,56 @@ body.dark-mode .settings-item {
     font-size: 18px;
     margin: 0;
 }
+
+/* Post creation form */
+.post-form {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 20px;
+}
+
+.post-form textarea {
+    resize: vertical;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    margin-bottom: 5px;
+}
+
+.post-form button {
+    align-self: flex-end;
+    background-color: var(--primary-color, #e53935);
+    color: #fff;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+/* Chat */
+.chat-messages {
+    max-height: 60vh;
+    overflow-y: auto;
+    margin-bottom: 10px;
+}
+
+.chat-form {
+    display: flex;
+}
+
+.chat-form input {
+    flex: 1;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    margin-right: 5px;
+}
+
+.chat-form button {
+    background-color: var(--primary-color, #e53935);
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    padding: 8px 12px;
+    cursor: pointer;
+}
