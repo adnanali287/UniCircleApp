@@ -59,7 +59,7 @@ function changeColorScheme() {
 document.addEventListener('DOMContentLoaded', () => {
     const token = localStorage.getItem('token');
     const page = window.location.pathname.split('/').pop();
-    if (!token && page !== 'index.html' && page !== 'register.html') {
+    if (!token && page !== 'index.html' && page !== 'login.html' && page !== 'register.html') {
         window.location.href = 'index.html';
         return;
     }
@@ -72,7 +72,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const colorScheme = localStorage.getItem('colorScheme') || 'default';
     document.body.classList.add(`${colorScheme}-scheme`);
 
-    if (page === 'index.html' || page === 'register.html') {
+    if (page === 'index.html' || page === 'login.html' || page === 'register.html') {
         // Don't load home content on login or register pages
         return;
     }
@@ -101,7 +101,7 @@ if (document.getElementById('registerForm')) {
         const data = await response.json();
         if (response.ok) {
             document.getElementById('registerMessage').textContent = 'Registration successful! Please log in.';
-            window.location.href = 'index.html';
+            window.location.href = 'login.html';
         } else {
             document.getElementById('registerMessage').textContent = `Error: ${data.msg}`;
         }
