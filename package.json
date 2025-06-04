@@ -5,7 +5,8 @@
   "main": "script.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "echo 'No build step required for this static site.'"
+    "build": "echo 'No build step required for this static site.'",
+    "dev": "http-server ."
   },
   "keywords": [],
   "author": "",
@@ -13,5 +14,8 @@
   "type": "commonjs",
   "dependencies": {
     "crypto-js": "^4.2.0"
+  },
+  "devDependencies": {
+    "http-server": "^14.1.1"
   }
 }
