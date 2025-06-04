@@ -44,8 +44,10 @@ function changeColorScheme() {
 // Load preferences and check authentication
 document.addEventListener('DOMContentLoaded', () => {
     const token = localStorage.getItem('token');
-    if (!token && window.location.pathname !== '/index.html' && window.location.pathname !== '/register.html') {
+    const page = window.location.pathname.split('/').pop();
+    if (!token && page !== 'index.html' && page !== 'register.html') {
         window.location.href = 'index.html';
+        return;
     }
 
     const darkModeEnabled = JSON.parse(localStorage.getItem('darkMode'));
@@ -56,7 +58,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const colorScheme = localStorage.getItem('colorScheme') || 'default';
     document.body.classList.add(`${colorScheme}-scheme`);
 
-    if (window.location.pathname === '/index.html' || window.location.pathname === '/register.html') {
+    if (page === 'index.html' || page === 'register.html') {
         // Don't load home content on login or register pages
         return;
     }
