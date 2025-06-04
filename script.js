@@ -25,7 +25,7 @@ async function loadContent(page) {
 
         const colorSchemeSelect = document.getElementById('colorScheme');
         if (colorSchemeSelect) {
-            colorSchemeSelect.value = localStorage.getItem('colorScheme') || 'default';
+            colorSchemeSelect.value = localStorage.getItem('colorScheme') || 'modern';
         }
     } catch (error) {
         console.warn('Error loading content:', error);
@@ -78,7 +78,7 @@ document.addEventListener('DOMContentLoaded', () => {
         document.body.classList.add('dark-mode');
     }
 
-    const colorScheme = localStorage.getItem('colorScheme') || 'default';
+    const colorScheme = localStorage.getItem('colorScheme') || 'modern';
     document.body.classList.add(`${colorScheme}-scheme`);
 
     if (page === 'index.html' || page === 'login.html' || page === 'register.html') {
