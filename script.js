@@ -50,7 +50,7 @@ function toggleDarkMode() {
 // Change color scheme
 function changeColorScheme() {
     const colorScheme = document.getElementById('colorScheme').value;
-    document.body.className = document.body.className.replace(/(default|red|blue|green|purple)-scheme/g, '');
+    document.body.className = document.body.className.replace(/(default|red|blue|green|purple|modern)-scheme/g, '');
     document.body.classList.add(`${colorScheme}-scheme`);
     localStorage.setItem('colorScheme', colorScheme);
 }

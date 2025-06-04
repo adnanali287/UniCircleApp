@@ -1,7 +1,7 @@
 :root {
-    --primary-color: #ff6b6b; /* modern coral */
-    --secondary-color: #4e9af1;
-    --bg-gradient: linear-gradient(135deg, #ffffff, #ffe6e6);
+    --primary-color: #3b82f6; /* modern blue */
+    --secondary-color: #10b981; /* teal accent */
+    --bg-gradient: linear-gradient(135deg, #eef2ff, #e0f7fa);
 }
 
 body {
@@ -345,8 +345,8 @@ body.dark-mode .settings-item {
 
 /* Color scheme modifiers */
 .default-scheme {
-    --primary-color: #ff6b6b;
-    --bg-gradient: linear-gradient(135deg, #ffffff, #ffe6e6);
+    --primary-color: #3b82f6;
+    --bg-gradient: linear-gradient(135deg, #eef2ff, #e0f7fa);
 }
 
 .red-scheme {
@@ -367,4 +367,52 @@ body.dark-mode .settings-item {
 .purple-scheme {
     --primary-color: #8e24aa;
     --bg-gradient: linear-gradient(135deg, #f3e5f5, #e1bee7);
+}
+
+/* Modern theme */
+.modern-scheme {
+    --primary-color: #3b82f6;
+    --secondary-color: #10b981;
+    --bg-gradient: linear-gradient(135deg, #eef2ff, #e0f7fa);
+}
+
+/* Hero section */
+.hero {
+    position: relative;
+    background-image: url('https://images.unsplash.com/photo-1523050854058-8df90110c9f1?auto=format&fit=crop&w=1050&q=80');
+    background-size: cover;
+    background-position: center;
+    color: #fff;
+    padding: 80px 20px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+    overflow: hidden;
+}
+
+.hero::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.4);
+}
+
+.hero-content {
+    position: relative;
+    z-index: 1;
+    text-align: center;
+    animation: fadeUp 0.8s ease-in-out;
+}
+
+.hero h2 {
+    font-size: 36px;
+    margin: 0 0 10px;
+    font-family: 'Lobster', cursive;
+}
+
+.hero p {
+    font-size: 18px;
+    margin: 0;
 }
