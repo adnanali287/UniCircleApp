@@ -8,6 +8,9 @@ async function loadContent(page) {
         }
         const html = await response.text();
         document.getElementById('app-content').innerHTML = html;
+        if (page === 'profile.html') {
+            setupProfilePage();
+        }
 
         const darkModeToggle = document.getElementById('darkModeToggle');
         if (darkModeToggle) {
@@ -59,7 +62,7 @@ function changeColorScheme() {
 document.addEventListener('DOMContentLoaded', () => {
     const token = localStorage.getItem('token');
     const page = window.location.pathname.split('/').pop();
-    if (!token && page !== 'index.html' && page !== 'register.html') {
+    if (!token && page !== 'index.html' && page !== 'login.html' && page !== 'register.html') {
         window.location.href = 'index.html';
         return;
     }
@@ -72,7 +75,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const colorScheme = localStorage.getItem('colorScheme') || 'default';
     document.body.classList.add(`${colorScheme}-scheme`);
 
-    if (page === 'index.html' || page === 'register.html') {
+    if (page === 'index.html' || page === 'login.html' || page === 'register.html') {
         // Don't load home content on login or register pages
         return;
     }
@@ -80,32 +83,82 @@ document.addEventListener('DOMContentLoaded', () => {
     loadContent('home-content.html'); // Load the home content by default
 });
 
+// Helper functions for local authentication
+async function hashPassword(password) {
+    try {
+        if (window.crypto && window.crypto.subtle) {
+            const enc = new TextEncoder().encode(password);
+            const buf = await crypto.subtle.digest('SHA-256', enc);
+            return Array.from(new Uint8Array(buf))
+                .map(b => b.toString(16).padStart(2, '0'))
+                .join('');
+        }
+    } catch (err) {
+        console.warn('crypto.subtle not available, using CryptoJS');
+    }
+    if (window.CryptoJS) {
+        return CryptoJS.SHA256(password).toString();
+    }
+    return btoa(password);
+}
+
+function getUsers() {
+    return JSON.parse(localStorage.getItem('users') || '[]');
+}
+
+function saveUsers(users) {
+    localStorage.setItem('users', JSON.stringify(users));
+}
+
+function setCurrentUser(email) {
+    localStorage.setItem('token', email);
+}
+
+function getCurrentUser() {
+    const email = localStorage.getItem('token');
+    if (!email) return null;
+    const users = getUsers();
+    return users.find(u => u.email === email);
+}
+
+function updateCurrentUser(updated) {
+    const users = getUsers();
+    const idx = users.findIndex(u => u.email === updated.email);
+    if (idx !== -1) {
+        users[idx] = updated;
+        saveUsers(users);
+    }
+}
+
 // Handle registration
 if (document.getElementById('registerForm')) {
     document.getElementById('registerForm').addEventListener('submit', async (e) => {
         e.preventDefault();
         showLoader();
+        try {
+            const name = document.getElementById('name').value.trim();
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value;
 
-        const name = document.getElementById('name').value;
-        const email = document.getElementById('email').value;
-        const password = document.getElementById('password').value;
+            const users = getUsers();
+            if (users.some(u => u.email === email)) {
+                document.getElementById('registerMessage').textContent = 'Email already registered.';
+                return;
+            }
 
-        const response = await fetch('https://unicircle-backend.onrender.com/api/users/register', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ name, email, password })
-        });
-
-        const data = await response.json();
-        if (response.ok) {
+            const passwordHash = await hashPassword(password);
+            users.push({ name, email, passwordHash, bio: '', image: '' });
+            saveUsers(users);
             document.getElementById('registerMessage').textContent = 'Registration successful! Please log in.';
-            window.location.href = 'index.html';
-        } else {
-            document.getElementById('registerMessage').textContent = `Error: ${data.msg}`;
+            setTimeout(() => {
+                window.location.href = 'index.html';
+            }, 500);
+        } catch (err) {
+            console.error(err);
+            document.getElementById('registerMessage').textContent = 'Registration failed.';
+        } finally {
+            hideLoader();
         }
-        hideLoader();
     });
 }
 
@@ -114,25 +167,79 @@ if (document.getElementById('loginForm')) {
     document.getElementById('loginForm').addEventListener('submit', async (e) => {
         e.preventDefault();
         showLoader();
+        try {
+            const email = document.getElementById('loginEmail').value.trim();
+            const password = document.getElementById('loginPassword').value;
 
-        const email = document.getElementById('loginEmail').value;
-        const password = document.getElementById('loginPassword').value;
+            const users = getUsers();
+            const passwordHash = await hashPassword(password);
+            const user = users.find(u => u.email === email && u.passwordHash === passwordHash);
 
-        const response = await fetch('https://unicircle-backend.onrender.com/api/users/login', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ email, password })
-        });
-
-        const data = await response.json();
-        if (response.ok) {
-            localStorage.setItem('token', data.token);
-            window.location.href = 'home.html';
-        } else {
-            document.getElementById('loginMessage').textContent = `Error: ${data.msg}`;
+            if (user) {
+                setCurrentUser(email);
+                window.location.href = 'home.html';
+            } else {
+                document.getElementById('loginMessage').textContent = 'Invalid credentials.';
+            }
+        } catch (err) {
+            console.error(err);
+            document.getElementById('loginMessage').textContent = 'Login failed.';
+        } finally {
+            hideLoader();
         }
-        hideLoader();
+    });
+}
+
+// Profile page setup
+function setupProfilePage() {
+    const form = document.getElementById('profileForm');
+    if (!form) return;
+    const user = getCurrentUser();
+    if (!user) return;
+
+    const nameInput = document.getElementById('profileName');
+    const bioInput = document.getElementById('profileBio');
+    const pictureInput = document.getElementById('profilePicture');
+    const preview = document.getElementById('profilePreview');
+
+    nameInput.value = user.name || '';
+    bioInput.value = user.bio || '';
+    if (user.image) {
+        preview.src = user.image;
+    }
+
+    pictureInput.addEventListener('change', () => {
+        const file = pictureInput.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = e => {
+                preview.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+    });
+
+    form.addEventListener('submit', (e) => {
+        e.preventDefault();
+        showLoader();
+
+        user.name = nameInput.value.trim();
+        user.bio = bioInput.value.trim();
+
+        const file = pictureInput.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = ev => {
+                user.image = ev.target.result;
+                updateCurrentUser(user);
+                document.getElementById('profileMessage').textContent = 'Profile updated.';
+                hideLoader();
+            };
+            reader.readAsDataURL(file);
+        } else {
+            updateCurrentUser(user);
+            document.getElementById('profileMessage').textContent = 'Profile updated.';
+            hideLoader();
+        }
     });
 }
