@@ -68,8 +68,15 @@ function changeColorScheme() {
 document.addEventListener('DOMContentLoaded', () => {
     const token = localStorage.getItem('token');
     const page = window.location.pathname.split('/').pop();
-    if (!token && page !== 'index.html' && page !== 'login.html' && page !== 'register.html') {
+    const authPages = ['index.html', 'login.html', 'register.html'];
+
+    if (!token && !authPages.includes(page)) {
         window.location.href = 'index.html';
+        return;
+    }
+
+    if (token && authPages.includes(page) && page !== 'index.html') {
+        window.location.href = 'home.html';
         return;
     }
 
@@ -117,6 +124,11 @@ async function apiGetUsers() {
 
 function setCurrentUser(email) {
     localStorage.setItem('token', email);
+}
+
+function logout() {
+    localStorage.removeItem('token');
+    window.location.href = 'index.html';
 }
 
 async function apiGetCurrentUser() {
