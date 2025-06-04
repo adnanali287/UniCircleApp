@@ -44,7 +44,14 @@ function changeColorScheme() {
 // Load preferences and check authentication
 document.addEventListener('DOMContentLoaded', () => {
     const token = localStorage.getItem('token');
-    if (!token && window.location.pathname !== '/index.html' && window.location.pathname !== '/register.html') {
+    const page = window.location.pathname.split('/').pop();
+
+    if (token && (page === 'index.html' || page === 'login.html')) {
+        window.location.href = 'home.html';
+        return;
+    }
+
+    if (!token && page !== 'index.html' && page !== 'register.html' && page !== 'login.html') {
         window.location.href = 'index.html';
     }
 
@@ -56,12 +63,14 @@ document.addEventListener('DOMContentLoaded', () => {
     const colorScheme = localStorage.getItem('colorScheme') || 'default';
     document.body.classList.add(`${colorScheme}-scheme`);
 
-    if (window.location.pathname === '/index.html' || window.location.pathname === '/register.html') {
+    if (page === 'index.html' || page === 'register.html' || page === 'login.html') {
         // Don't load home content on login or register pages
         return;
     }
 
-    loadContent('home.html'); // Load the home content by default
+    if (page !== 'home.html') {
+        loadContent('home.html'); // Load the home content by default
+    }
 });
 
 // Handle registration
