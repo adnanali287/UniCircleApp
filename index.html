@@ -6,11 +6,11 @@
     <title>UniCircle - Connect Your Campus</title>
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lobster&family=Poppins:wght@400;600&display=swap">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lobster&family=Poppins:wght@400;600;700&display=swap">
 </head>
 <body>
     <div class="app landing-app">
-        <header class="app-header">
+        <header class="app-header landing-header">
             <h1>UniCircle</h1>
         </header>
         <main class="login-main">
@@ -18,12 +18,32 @@
                 <section class="hero">
                     <div class="hero-content">
                         <h2>Connect with your campus</h2>
-                        <p>Join clubs, share moments and explore university life</p>
+                        <p class="hero-subtitle">Join clubs, share moments, and explore university life together</p>
+                        <div class="hero-features">
+                            <div class="feature-item">
+                                <i class="fas fa-users"></i>
+                                <span>Join Interest Circles</span>
+                            </div>
+                            <div class="feature-item">
+                                <i class="fas fa-comments"></i>
+                                <span>Real-time Chat</span>
+                            </div>
+                            <div class="feature-item">
+                                <i class="fas fa-calendar-alt"></i>
+                                <span>Campus Events</span>
+                            </div>
+                        </div>
                     </div>
                 </section>
-                <div class="auth-buttons">
-                    <a href="login.html" class="landing-button">Log In</a>
-                    <a href="register.html" class="landing-button">Sign Up</a>
+                <div class="auth-container">
+                    <div class="auth-buttons">
+                        <a href="login.html" class="landing-button login-btn">
+                            <i class="fas fa-sign-in-alt"></i> Log In
+                        </a>
+                        <a href="register.html" class="landing-button signup-btn">
+                            <i class="fas fa-user-plus"></i> Sign Up
+                        </a>
+                    </div>
                 </div>
             </div>
         </main>
