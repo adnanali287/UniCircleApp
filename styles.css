@@ -544,6 +544,12 @@ body.dark-mode .settings-item {
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
 }
 
+.landing-tagline {
+    margin: 5px 0 0;
+    font-size: 1.2rem;
+    color: var(--text-secondary);
+}
+
 .landing-container {
     text-align: center;
     max-width: 1200px;
@@ -573,7 +579,7 @@ body.dark-mode .settings-item {
     background: url('https://images.unsplash.com/photo-1517511620798-cec17d428bc0?auto=format&fit=crop&w=1200&q=80');
     background-size: cover;
     background-position: center;
-    opacity: 0.1;
+    opacity: 0.2;
     z-index: 0;
 }
 
