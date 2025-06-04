@@ -63,7 +63,7 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
     }
 
-    loadContent('home.html'); // Load the home content by default
+    loadContent('home-content.html'); // Load the home content by default
 });
 
 // Handle registration
