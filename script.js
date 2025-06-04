@@ -89,7 +89,9 @@ document.addEventListener('DOMContentLoaded', () => {
     loadContent('home-content.html'); // Load the home content by default
 });
 
-// Helper functions for local authentication
+const API_BASE = 'http://localhost:3000/api';
+
+// Helper functions for local authentication with server fallback
 async function hashPassword(password) {
     try {
         if (window.crypto && window.crypto.subtle) {
@@ -108,32 +110,28 @@ async function hashPassword(password) {
     return btoa(password);
 }
 
-function getUsers() {
-    return JSON.parse(localStorage.getItem('users') || '[]');
-}
-
-function saveUsers(users) {
-    localStorage.setItem('users', JSON.stringify(users));
+async function apiGetUsers() {
+    const res = await fetch(`${API_BASE}/users`);
+    return await res.json();
 }
 
 function setCurrentUser(email) {
     localStorage.setItem('token', email);
 }
 
-function getCurrentUser() {
+async function apiGetCurrentUser() {
     const email = localStorage.getItem('token');
     if (!email) return null;
-    const users = getUsers();
+    const users = await apiGetUsers();
     return users.find(u => u.email === email);
 }
 
-function updateCurrentUser(updated) {
-    const users = getUsers();
-    const idx = users.findIndex(u => u.email === updated.email);
-    if (idx !== -1) {
-        users[idx] = updated;
-        saveUsers(users);
-    }
+async function apiUpdateCurrentUser(updated) {
+    await fetch(`${API_BASE}/profile`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(updated)
+    });
 }
 
 // Handle registration
@@ -146,15 +144,16 @@ if (document.getElementById('registerForm')) {
             const email = document.getElementById('email').value.trim();
             const password = document.getElementById('password').value;
 
-            const users = getUsers();
-            if (users.some(u => u.email === email)) {
-                document.getElementById('registerMessage').textContent = 'Email already registered.';
+            const res = await fetch(`${API_BASE}/register`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name, email, password })
+            });
+            if (!res.ok) {
+                const data = await res.json();
+                document.getElementById('registerMessage').textContent = data.error || 'Registration failed.';
                 return;
             }
-
-            const passwordHash = await hashPassword(password);
-            users.push({ name, email, passwordHash, bio: '', image: '' });
-            saveUsers(users);
             document.getElementById('registerMessage').textContent = 'Registration successful! Please log in.';
             setTimeout(() => {
                 window.location.href = 'index.html';
@@ -177,15 +176,17 @@ if (document.getElementById('loginForm')) {
             const email = document.getElementById('loginEmail').value.trim();
             const password = document.getElementById('loginPassword').value;
 
-            const users = getUsers();
-            const passwordHash = await hashPassword(password);
-            const user = users.find(u => u.email === email && u.passwordHash === passwordHash);
-
-            if (user) {
+            const res = await fetch(`${API_BASE}/login`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, password })
+            });
+            if (res.ok) {
                 setCurrentUser(email);
                 window.location.href = 'home.html';
             } else {
-                document.getElementById('loginMessage').textContent = 'Invalid credentials.';
+                const data = await res.json();
+                document.getElementById('loginMessage').textContent = data.error || 'Invalid credentials.';
             }
         } catch (err) {
             console.error(err);
@@ -197,10 +198,10 @@ if (document.getElementById('loginForm')) {
 }
 
 // Profile page setup
-function setupProfilePage() {
+async function setupProfilePage() {
     const form = document.getElementById('profileForm');
     if (!form) return;
-    const user = getCurrentUser();
+    const user = await apiGetCurrentUser();
     if (!user) return;
 
     const nameInput = document.getElementById('profileName');
@@ -225,7 +226,7 @@ function setupProfilePage() {
         }
     });
 
-    form.addEventListener('submit', (e) => {
+    form.addEventListener('submit', async (e) => {
         e.preventDefault();
         showLoader();
 
@@ -235,15 +236,15 @@ function setupProfilePage() {
         const file = pictureInput.files[0];
         if (file) {
             const reader = new FileReader();
-            reader.onload = ev => {
+            reader.onload = async ev => {
                 user.image = ev.target.result;
-                updateCurrentUser(user);
+                await apiUpdateCurrentUser(user);
                 document.getElementById('profileMessage').textContent = 'Profile updated.';
                 hideLoader();
             };
             reader.readAsDataURL(file);
         } else {
-            updateCurrentUser(user);
+            await apiUpdateCurrentUser(user);
             document.getElementById('profileMessage').textContent = 'Profile updated.';
             hideLoader();
         }
@@ -264,7 +265,7 @@ function renderPosts() {
     if (!container) return;
     container.innerHTML = '';
     const posts = getPosts();
-    const users = getUsers();
+    apiGetUsers().then(users => {
     posts.slice().reverse().forEach(p => {
         const user = users.find(u => u.email === p.email) || { name: p.email };
         const div = document.createElement('div');
@@ -290,15 +291,17 @@ function renderPosts() {
         div.appendChild(content);
         container.appendChild(div);
     });
+    });
 }
 
-function setupHomePage() {
+async function setupHomePage() {
     const form = document.getElementById('postForm');
     if (!form) return;
+    const user = await apiGetCurrentUser();
     form.addEventListener('submit', e => {
         e.preventDefault();
         showLoader();
-        const user = getCurrentUser();
+        if (!user) return;
         const text = document.getElementById('postText').value.trim();
         const file = document.getElementById('postImage').files[0];
         const newPost = { email: user.email, text, image: '' };
@@ -325,28 +328,32 @@ function setupHomePage() {
 }
 
 // ----- Chat -----
-function getMessages() {
-    return JSON.parse(localStorage.getItem('messages') || '[]');
+async function apiGetMessages(user1, user2) {
+    const res = await fetch(`${API_BASE}/messages?user1=${encodeURIComponent(user1)}&user2=${encodeURIComponent(user2)}`);
+    return await res.json();
 }
 
-function saveMessages(msgs) {
-    localStorage.setItem('messages', JSON.stringify(msgs));
+async function apiSendMessage(from, to, text) {
+    await fetch(`${API_BASE}/messages`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ from, to, text })
+    });
 }
 
-function renderMessages() {
+async function renderMessages(withUser) {
     const container = document.getElementById('chatMessages');
     if (!container) return;
     container.innerHTML = '';
-    const msgs = getMessages();
-    const users = getUsers();
+    const current = localStorage.getItem('token');
+    const msgs = await apiGetMessages(current, withUser);
     msgs.forEach(m => {
-        const user = users.find(u => u.email === m.email) || { name: m.email };
         const div = document.createElement('div');
         div.className = 'chat-item';
         const content = document.createElement('div');
         content.className = 'chat-content';
         const h3 = document.createElement('h3');
-        h3.textContent = user.name;
+        h3.textContent = m.from === current ? 'You' : withUser;
         const p = document.createElement('p');
         p.textContent = m.text;
         content.appendChild(h3);
@@ -357,20 +364,26 @@ function renderMessages() {
     container.scrollTop = container.scrollHeight;
 }
 
-function setupMessagesPage() {
+async function setupMessagesPage() {
     const form = document.getElementById('chatForm');
-    if (!form) return;
-    form.addEventListener('submit', e => {
+    const select = document.getElementById('chatUserSelect');
+    if (!form || !select) return;
+    const users = await apiGetUsers();
+    const current = localStorage.getItem('token');
+    select.innerHTML = users.filter(u => u.email !== current).map(u => `<option value="${u.email}">${u.name}</option>`).join('');
+    let activeUser = select.value;
+    select.addEventListener('change', () => {
+        activeUser = select.value;
+        renderMessages(activeUser);
+    });
+    form.addEventListener('submit', async e => {
         e.preventDefault();
-        const user = getCurrentUser();
         const input = document.getElementById('chatInput');
         const text = input.value.trim();
         if (!text) return;
-        const msgs = getMessages();
-        msgs.push({ email: user.email, text });
-        saveMessages(msgs);
+        await apiSendMessage(current, activeUser, text);
         input.value = '';
-        renderMessages();
+        renderMessages(activeUser);
     });
-    renderMessages();
+    renderMessages(activeUser);
 }
