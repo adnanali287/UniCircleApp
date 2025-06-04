@@ -9,19 +9,24 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lobster&display=swap">
 </head>
 <body>
-    <div class="app">
+    <div class="app login-app">
         <header class="app-header">
             <h1>Login to UniCircle</h1>
         </header>
-        <main class="app-main" id="app-content">
-            <form id="loginForm">
-                <input type="email" id="loginEmail" placeholder="Email" required />
-                <input type="password" id="loginPassword" placeholder="Password" required />
-                <button type="submit">Login</button>
-            </form>
-            <div id="loginMessage"></div>
-            <p>Don't have an account? <a href="register.html">Register here</a></p>
+        <main class="login-main">
+            <div class="login-card">
+                <form id="loginForm">
+                    <input type="email" id="loginEmail" placeholder="Email" required />
+                    <input type="password" id="loginPassword" placeholder="Password" required />
+                    <button type="submit">Login</button>
+                </form>
+                <div id="loginMessage" class="form-message"></div>
+                <p class="switch-link">Don't have an account? <a href="register.html">Register here</a></p>
+            </div>
         </main>
+    </div>
+    <div id="loadingOverlay" class="loading-overlay" style="display:none;">
+        <div class="spinner"></div>
     </div>
     <script src="script.js"></script>
 </body>

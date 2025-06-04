@@ -1,29 +1,43 @@
 // Load content dynamically
-function loadContent(page) {
-    fetch(page)
-        .then(response => {
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-            return response.text();
-        })
-        .then(html => {
-            document.getElementById('app-content').innerHTML = html;
-            // Handle dark mode toggle
-            const darkModeToggle = document.getElementById('darkModeToggle');
-            if (darkModeToggle) {
-                darkModeToggle.checked = document.body.classList.contains('dark-mode');
-            }
+async function loadContent(page) {
+    showLoader();
+    try {
+        const response = await fetch(page);
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const html = await response.text();
+        document.getElementById('app-content').innerHTML = html;
 
-            // Handle color scheme selection
-            const colorSchemeSelect = document.getElementById('colorScheme');
-            if (colorSchemeSelect) {
-                colorSchemeSelect.value = localStorage.getItem('colorScheme') || 'default';
-            }
-        })
-        .catch(error => {
-            console.warn('Error loading content:', error);
-        });
+        const darkModeToggle = document.getElementById('darkModeToggle');
+        if (darkModeToggle) {
+            darkModeToggle.checked = document.body.classList.contains('dark-mode');
+        }
+
+        const colorSchemeSelect = document.getElementById('colorScheme');
+        if (colorSchemeSelect) {
+            colorSchemeSelect.value = localStorage.getItem('colorScheme') || 'default';
+        }
+    } catch (error) {
+        console.warn('Error loading content:', error);
+        document.getElementById('app-content').innerHTML = '<p class="error">Failed to load content.</p>';
+    } finally {
+        hideLoader();
+    }
+}
+
+function showLoader() {
+    const loader = document.getElementById('loadingOverlay');
+    if (loader) {
+        loader.style.display = 'flex';
+    }
+}
+
+function hideLoader() {
+    const loader = document.getElementById('loadingOverlay');
+    if (loader) {
+        loader.style.display = 'none';
+    }
 }
 
 // Toggle dark mode
@@ -70,6 +84,7 @@ document.addEventListener('DOMContentLoaded', () => {
 if (document.getElementById('registerForm')) {
     document.getElementById('registerForm').addEventListener('submit', async (e) => {
         e.preventDefault();
+        showLoader();
 
         const name = document.getElementById('name').value;
         const email = document.getElementById('email').value;
@@ -86,10 +101,11 @@ if (document.getElementById('registerForm')) {
         const data = await response.json();
         if (response.ok) {
             document.getElementById('registerMessage').textContent = 'Registration successful! Please log in.';
-            window.location.href = 'index.html'; // Redirect to login page
+            window.location.href = 'index.html';
         } else {
             document.getElementById('registerMessage').textContent = `Error: ${data.msg}`;
         }
+        hideLoader();
     });
 }
 
@@ -97,6 +113,7 @@ if (document.getElementById('registerForm')) {
 if (document.getElementById('loginForm')) {
     document.getElementById('loginForm').addEventListener('submit', async (e) => {
         e.preventDefault();
+        showLoader();
 
         const email = document.getElementById('loginEmail').value;
         const password = document.getElementById('loginPassword').value;
@@ -111,10 +128,11 @@ if (document.getElementById('loginForm')) {
 
         const data = await response.json();
         if (response.ok) {
-            localStorage.setItem('token', data.token); // Store the token in localStorage
-            window.location.href = 'home.html'; // Redirect to the main page
+            localStorage.setItem('token', data.token);
+            window.location.href = 'home.html';
         } else {
             document.getElementById('loginMessage').textContent = `Error: ${data.msg}`;
         }
+        hideLoader();
     });
 }
