@@ -65,7 +65,7 @@ function changeColorScheme() {
 }
 
 // Load preferences and check authentication
-document.addEventListener('DOMContentLoaded', () => {
+function initApp() {
     const token = localStorage.getItem('token');
     const page = window.location.pathname.split('/').pop();
     const authPages = ['index.html', 'login.html', 'register.html'];
@@ -94,7 +94,13 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     loadContent('home-content.html'); // Load the home content by default
-});
+}
+
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initApp);
+} else {
+    initApp();
+}
 
 const API_BASE = 'http://localhost:3000/api';
 
