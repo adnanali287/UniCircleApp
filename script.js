@@ -11,6 +11,12 @@ async function loadContent(page) {
         if (page === 'profile.html') {
             setupProfilePage();
         }
+        if (document.getElementById('postForm')) {
+            setupHomePage();
+        }
+        if (document.getElementById('chatForm')) {
+            setupMessagesPage();
+        }
 
         const darkModeToggle = document.getElementById('darkModeToggle');
         if (darkModeToggle) {
@@ -242,4 +248,129 @@ function setupProfilePage() {
             hideLoader();
         }
     });
+}
+
+// ----- Posts -----
+function getPosts() {
+    return JSON.parse(localStorage.getItem('posts') || '[]');
+}
+
+function savePosts(posts) {
+    localStorage.setItem('posts', JSON.stringify(posts));
+}
+
+function renderPosts() {
+    const container = document.getElementById('postsContainer');
+    if (!container) return;
+    container.innerHTML = '';
+    const posts = getPosts();
+    const users = getUsers();
+    posts.slice().reverse().forEach(p => {
+        const user = users.find(u => u.email === p.email) || { name: p.email };
+        const div = document.createElement('div');
+        div.className = 'feed-item';
+        const img = document.createElement('img');
+        img.className = 'profile-pic';
+        img.src = user.image || 'profile1.jpg';
+        const content = document.createElement('div');
+        content.className = 'post-content';
+        const h3 = document.createElement('h3');
+        h3.textContent = user.name;
+        const pText = document.createElement('p');
+        pText.textContent = p.text;
+        content.appendChild(h3);
+        content.appendChild(pText);
+        if (p.image) {
+            const pImg = document.createElement('img');
+            pImg.src = p.image;
+            pImg.className = 'post-image';
+            content.appendChild(pImg);
+        }
+        div.appendChild(img);
+        div.appendChild(content);
+        container.appendChild(div);
+    });
+}
+
+function setupHomePage() {
+    const form = document.getElementById('postForm');
+    if (!form) return;
+    form.addEventListener('submit', e => {
+        e.preventDefault();
+        showLoader();
+        const user = getCurrentUser();
+        const text = document.getElementById('postText').value.trim();
+        const file = document.getElementById('postImage').files[0];
+        const newPost = { email: user.email, text, image: '' };
+        const saveAndRender = () => {
+            const posts = getPosts();
+            posts.push(newPost);
+            savePosts(posts);
+            form.reset();
+            renderPosts();
+            hideLoader();
+        };
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = ev => {
+                newPost.image = ev.target.result;
+                saveAndRender();
+            };
+            reader.readAsDataURL(file);
+        } else {
+            saveAndRender();
+        }
+    });
+    renderPosts();
+}
+
+// ----- Chat -----
+function getMessages() {
+    return JSON.parse(localStorage.getItem('messages') || '[]');
+}
+
+function saveMessages(msgs) {
+    localStorage.setItem('messages', JSON.stringify(msgs));
+}
+
+function renderMessages() {
+    const container = document.getElementById('chatMessages');
+    if (!container) return;
+    container.innerHTML = '';
+    const msgs = getMessages();
+    const users = getUsers();
+    msgs.forEach(m => {
+        const user = users.find(u => u.email === m.email) || { name: m.email };
+        const div = document.createElement('div');
+        div.className = 'chat-item';
+        const content = document.createElement('div');
+        content.className = 'chat-content';
+        const h3 = document.createElement('h3');
+        h3.textContent = user.name;
+        const p = document.createElement('p');
+        p.textContent = m.text;
+        content.appendChild(h3);
+        content.appendChild(p);
+        div.appendChild(content);
+        container.appendChild(div);
+    });
+    container.scrollTop = container.scrollHeight;
+}
+
+function setupMessagesPage() {
+    const form = document.getElementById('chatForm');
+    if (!form) return;
+    form.addEventListener('submit', e => {
+        e.preventDefault();
+        const user = getCurrentUser();
+        const input = document.getElementById('chatInput');
+        const text = input.value.trim();
+        if (!text) return;
+        const msgs = getMessages();
+        msgs.push({ email: user.email, text });
+        saveMessages(msgs);
+        input.value = '';
+        renderMessages();
+    });
+    renderMessages();
 }

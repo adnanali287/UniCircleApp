@@ -4,28 +4,13 @@
         <p>Your hub for campus life</p>
     </div>
 </section>
+
 <h2>Home Feed</h2>
-<div class="feed-item">
-    <img src="profile1.jpg" alt="Profile" class="profile-pic">
-    <div class="post-content">
-        <h3>John Doe</h3>
-        <p>Join us for the Welcome Week festivities! Lots of fun activities and events to help you settle in.</p>
-        <div class="post-actions">
-            <button class="like-btn"><i class="fas fa-thumbs-up"></i> Like</button>
-            <button class="comment-btn" onclick="loadContent('comments1.html')"><i class="fas fa-comment"></i> Comment</button>
-            <button class="share-btn"><i class="fas fa-share"></i> Share</button>
-        </div>
-    </div>
-</div>
-<div class="feed-item">
-    <img src="profile2.jpg" alt="Profile" class="profile-pic">
-    <div class="post-content">
-        <h3>Library</h3>
-        <p>The library is now open 24/7 to accommodate all your study needs.</p>
-        <div class="post-actions">
-            <button class="like-btn"><i class="fas fa-thumbs-up"></i> Like</button>
-            <button class="comment-btn" onclick="loadContent('comments2.html')"><i class="fas fa-comment"></i> Comment</button>
-            <button class="share-btn"><i class="fas fa-share"></i> Share</button>
-        </div>
-    </div>
-</div>
+
+<form id="postForm" class="post-form">
+    <textarea id="postText" placeholder="What's on your mind?" required></textarea>
+    <input type="file" id="postImage" accept="image/*">
+    <button type="submit">Post</button>
+</form>
+
+<div id="postsContainer"></div>
