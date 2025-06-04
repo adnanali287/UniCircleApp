@@ -126,6 +126,11 @@ function setCurrentUser(email) {
     localStorage.setItem('token', email);
 }
 
+function logout() {
+    localStorage.removeItem('token');
+    window.location.href = 'index.html';
+}
+
 async function apiGetCurrentUser() {
     const email = localStorage.getItem('token');
     if (!email) return null;

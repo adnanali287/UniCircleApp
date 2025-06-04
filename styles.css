@@ -139,6 +139,19 @@ body.dark-mode .settings-item {
     font-size: 28px;
 }
 
+.logout-btn {
+    margin-left: auto;
+    background: none;
+    border: none;
+    color: inherit;
+    font-size: 1.2rem;
+    cursor: pointer;
+}
+
+.logout-btn:hover {
+    color: #ffebee;
+}
+
 .app-nav {
     display: flex;
     justify-content: space-around;
