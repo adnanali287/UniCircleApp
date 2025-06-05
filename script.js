@@ -1,3 +1,5 @@
+import { getProfile, updateProfile, getPosts, createPost, getUsers, getMessages, sendMessage } from './js/api.js';
+
 // Load content dynamically
 async function loadContent(page) {
     showLoader();
@@ -296,3 +298,10 @@ async function renderMessages(withUser) {
         container.innerHTML = '<p class="error">Failed to load messages.</p>';
     }
 }
+
+export {
+    loadContent,
+    toggleDarkMode,
+    changeColorScheme,
+    initApp
+};
