@@ -1,9 +1,14 @@
-<h2>Home Feed</h2>
+<div class="feed-container">
+    <form id="postForm" class="post-form">
+        <textarea id="postText" placeholder="What's on your mind?" required></textarea>
+        <div class="post-actions">
+            <input type="file" id="postImage" accept="image/*" style="display: none">
+            <button type="button" onclick="document.getElementById('postImage').click()">
+                <i class="fas fa-image"></i> Add Image
+            </button>
+            <button type="submit">Post</button>
+        </div>
+    </form>
 
-<form id="postForm" class="post-form">
-    <textarea id="postText" placeholder="What's on your mind?" required></textarea>
-    <input type="file" id="postImage" accept="image/*">
-    <button type="submit">Post</button>
-</form>
-
-<div id="postsContainer"></div>
+    <div id="postsContainer"></div>
+</div>

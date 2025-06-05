@@ -1,42 +1,71 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Circles - UniCircle</title>
-  <link rel="stylesheet" href="styles.css">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Circles - UniCircle</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 </head>
-<body style="margin: 0; font-family: 'Inter', sans-serif; background: #f9f9ff; color: #111;">
+<body>
+    <header>
+        <a href="index.html" class="logo">UniCircle</a>
+        <button onclick="loadContent('home.html')" aria-label="Home">
+            <i class="fas fa-home"></i>
+        </button>
+    </header>
 
-  <header style="display: flex; justify-content: space-between; align-items: center; padding: 1.5rem 2rem; border-bottom: 1px solid #eee;">
-    <a href="index.html" style="text-decoration: none; color: #7b4eff; font-size: 1.5rem; font-weight: 600;">UniCircle</a>
-    <button onclick="loadContent('home.html')" style="background: none; border: none; color: #7b4eff; font-size: 1.2rem;">
-      <i class="fas fa-home"></i>
-    </button>
-  </header>
+    <main>
+        <h2>Circles</h2>
+        <div class="circle-list">
+            <div class="circle-item" onclick="loadContent('confessions.html')">
+                <h3><i class="fas fa-comment-dots"></i> Confessions</h3>
+                <p>Share your anonymous thoughts</p>
+            </div>
+            <div class="circle-item" onclick="loadContent('badminton.html')">
+                <h3><i class="fas fa-table-tennis"></i> Badminton</h3>
+                <p>Connect with fellow players</p>
+            </div>
+            <div class="circle-item" onclick="loadContent('gaming.html')">
+                <h3><i class="fas fa-gamepad"></i> Gaming</h3>
+                <p>Find gaming buddies</p>
+            </div>
+            <div class="circle-item" onclick="loadContent('gym.html')">
+                <h3><i class="fas fa-dumbbell"></i> Gym</h3>
+                <p>Fitness enthusiasts unite</p>
+            </div>
+            <div class="circle-item" onclick="loadContent('medicine.html')">
+                <h3><i class="fas fa-user-md"></i> Medicine</h3>
+                <p>Medical students' corner</p>
+            </div>
+            <div class="circle-item" onclick="loadContent('library.html')">
+                <h3><i class="fas fa-book"></i> Library</h3>
+                <p>Study resources and discussions</p>
+            </div>
+            <div class="circle-item" onclick="loadContent('taylorswift.html')">
+                <h3><i class="fas fa-music"></i> Taylor Swift</h3>
+                <p>Swifties community</p>
+            </div>
+            <div class="circle-item" onclick="loadContent('groupstudy.html')">
+                <h3><i class="fas fa-users"></i> Group Study</h3>
+                <p>Find study partners</p>
+            </div>
+        </div>
+    </main>
 
-  <main style="padding: 2rem; padding-bottom: 4rem;">
-    <h2 style="text-align: center; font-size: 1.6rem; font-weight: 600; margin-bottom: 2rem;">Circles</h2>
-    <ul style="list-style: none; padding: 0; max-width: 500px; margin: 0 auto; display: flex; flex-direction: column; gap: 1rem;">
-      <li onclick="loadContent('confessions.html')" style="padding: 1rem; background: #fff; border-radius: 8px; cursor: pointer; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">Confessions</li>
-      <li onclick="loadContent('badminton.html')" style="padding: 1rem; background: #fff; border-radius: 8px; cursor: pointer; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">Badminton</li>
-      <li onclick="loadContent('gaming.html')" style="padding: 1rem; background: #fff; border-radius: 8px; cursor: pointer; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">Gaming</li>
-      <li onclick="loadContent('gym.html')" style="padding: 1rem; background: #fff; border-radius: 8px; cursor: pointer; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">Gym</li>
-      <li onclick="loadContent('medicine.html')" style="padding: 1rem; background: #fff; border-radius: 8px; cursor: pointer; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">Medicine</li>
-      <li onclick="loadContent('library.html')" style="padding: 1rem; background: #fff; border-radius: 8px; cursor: pointer; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">Library</li>
-      <li onclick="loadContent('taylorswift.html')" style="padding: 1rem; background: #fff; border-radius: 8px; cursor: pointer; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">Taylor Swift</li>
-      <li onclick="loadContent('groupstudy.html')" style="padding: 1rem; background: #fff; border-radius: 8px; cursor: pointer; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">Group Study</li>
-    </ul>
-  </main>
+    <nav class="bottom-nav">
+        <button onclick="loadContent('home-content.html')">
+            <i class="fas fa-home"></i>
+        </button>
+        <button onclick="loadContent('circles.html')" class="active">
+            <i class="fas fa-users"></i>
+        </button>
+        <button onclick="loadContent('profile.html')">
+            <i class="fas fa-user"></i>
+        </button>
+    </nav>
 
-  <nav style="position: fixed; bottom: 0; width: 100%; display: flex; justify-content: space-around; background: #fff; border-top: 1px solid #eee; padding: 0.75rem 0;">
-    <button onclick="loadContent('home-content.html')" style="background: none; border: none; color: #888; font-size: 1.2rem;"><i class="fas fa-home"></i></button>
-    <button onclick="loadContent('circles.html')" style="background: none; border: none; color: #7b4eff; font-size: 1.2rem;"><i class="fas fa-users"></i></button>
-    <button onclick="loadContent('profile.html')" style="background: none; border: none; color: #888; font-size: 1.2rem;"><i class="fas fa-user"></i></button>
-  </nav>
-
-  <script src="script.js"></script>
+    <script src="script.js"></script>
 </body>
 </html>
