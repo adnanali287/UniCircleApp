@@ -1,129 +1,118 @@
-const API_BASE = 'http://localhost:3000/api';
+import { supabase } from './supabase.js';
 
 // Authentication API calls
 export async function login(email, password) {
-  const response = await fetch(`${API_BASE}/login`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ email, password })
+  const { data, error } = await supabase.auth.signInWithPassword({
+    email,
+    password,
   });
   
-  if (!response.ok) {
-    const error = await response.json();
-    throw new Error(error.message || 'Login failed');
-  }
-  
-  const data = await response.json();
-  localStorage.setItem('token', data.token);
+  if (error) throw new Error(error.message);
   return data.user;
 }
 
 export async function register(name, email, password) {
-  const response = await fetch(`${API_BASE}/register`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ name, email, password })
+  const { data: authData, error: authError } = await supabase.auth.signUp({
+    email,
+    password,
   });
   
-  if (!response.ok) {
-    const error = await response.json();
-    throw new Error(error.message || 'Registration failed');
-  }
+  if (authError) throw new Error(authError.message);
+
+  // Create user profile
+  const { error: profileError } = await supabase
+    .from('users')
+    .insert([{ id: authData.user.id, name, email }]);
+
+  if (profileError) throw new Error(profileError.message);
   
-  return response.json();
+  return authData.user;
 }
 
 export async function getProfile() {
-  const token = localStorage.getItem('token');
-  if (!token) throw new Error('Not authenticated');
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) throw new Error('Not authenticated');
   
-  const response = await fetch(`${API_BASE}/profile`, {
-    headers: {
-      'Authorization': `Bearer ${token}`
-    }
-  });
+  const { data, error } = await supabase
+    .from('users')
+    .select('*')
+    .eq('id', user.id)
+    .single();
   
-  if (!response.ok) throw new Error('Failed to fetch profile');
-  return response.json();
+  if (error) throw new Error('Failed to fetch profile');
+  return data;
 }
 
 export async function updateProfile(profileData) {
-  const token = localStorage.getItem('token');
-  if (!token) throw new Error('Not authenticated');
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) throw new Error('Not authenticated');
   
-  const response = await fetch(`${API_BASE}/profile`, {
-    method: 'POST',
-    headers: {
-      'Authorization': `Bearer ${token}`,
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify(profileData)
-  });
+  const { error } = await supabase
+    .from('users')
+    .update(profileData)
+    .eq('id', user.id);
   
-  if (!response.ok) throw new Error('Failed to update profile');
-  return response.json();
+  if (error) throw new Error('Failed to update profile');
+  return true;
 }
 
 // Posts API calls
 export async function getPosts() {
-  const token = localStorage.getItem('token');
-  if (!token) throw new Error('Not authenticated');
+  const { data, error } = await supabase
+    .from('posts')
+    .select(`
+      *,
+      author:users(name, image_url)
+    `)
+    .order('created_at', { ascending: false });
   
-  const response = await fetch(`${API_BASE}/posts`, {
-    headers: {
-      'Authorization': `Bearer ${token}`
-    }
-  });
-  
-  if (!response.ok) throw new Error('Failed to fetch posts');
-  return response.json();
+  if (error) throw new Error('Failed to fetch posts');
+  return data;
 }
 
 export async function createPost(postData) {
-  const token = localStorage.getItem('token');
-  if (!token) throw new Error('Not authenticated');
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) throw new Error('Not authenticated');
   
-  const response = await fetch(`${API_BASE}/posts`, {
-    method: 'POST',
-    headers: {
-      'Authorization': `Bearer ${token}`,
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify(postData)
-  });
+  const { error } = await supabase
+    .from('posts')
+    .insert([{
+      author_id: user.id,
+      text: postData.text,
+      image_url: postData.image
+    }]);
   
-  if (!response.ok) throw new Error('Failed to create post');
-  return response.json();
+  if (error) throw new Error('Failed to create post');
+  return true;
 }
 
 // Messages API calls
 export async function getMessages(userId) {
-  const token = localStorage.getItem('token');
-  if (!token) throw new Error('Not authenticated');
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) throw new Error('Not authenticated');
   
-  const response = await fetch(`${API_BASE}/messages?userId=${userId}`, {
-    headers: {
-      'Authorization': `Bearer ${token}`
-    }
-  });
+  const { data, error } = await supabase
+    .from('messages')
+    .select('*')
+    .or(`from_id.eq.${user.id},to_id.eq.${user.id}`)
+    .order('created_at', { ascending: true });
   
-  if (!response.ok) throw new Error('Failed to fetch messages');
-  return response.json();
+  if (error) throw new Error('Failed to fetch messages');
+  return data;
 }
 
 export async function sendMessage(userId, message) {
-  const token = localStorage.getItem('token');
-  if (!token) throw new Error('Not authenticated');
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) throw new Error('Not authenticated');
   
-  const response = await fetch(`${API_BASE}/messages`, {
-    method: 'POST',
-    headers: {
-      'Authorization': `Bearer ${token}`,
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({ userId, message })
-  });
+  const { error } = await supabase
+    .from('messages')
+    .insert([{
+      from_id: user.id,
+      to_id: userId,
+      text: message
+    }]);
   
-  if (!response.ok) throw new Error('Failed to send message');
-  return response.json();
+  if (error) throw new Error('Failed to send message');
+  return true;
 }
