@@ -46,10 +46,34 @@ export async function getProfile() {
 export async function updateProfile(profileData) {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) throw new Error('Not authenticated');
+
+  let imageUrl = profileData.image_url;
+
+  // Handle image upload if a new image is provided
+  if (profileData.image && profileData.image instanceof File) {
+    const fileExt = profileData.image.name.split('.').pop();
+    const fileName = `${user.id}-${Date.now()}.${fileExt}`;
+    const { data: uploadData, error: uploadError } = await supabase.storage
+      .from('profile-images')
+      .upload(fileName, profileData.image);
+
+    if (uploadError) throw new Error('Failed to upload image');
+
+    const { data: { publicUrl } } = supabase.storage
+      .from('profile-images')
+      .getPublicUrl(fileName);
+
+    imageUrl = publicUrl;
+  }
   
   const { error } = await supabase
     .from('users')
-    .update(profileData)
+    .update({
+      name: profileData.name,
+      bio: profileData.bio,
+      image_url: imageUrl,
+      updated_at: new Date().toISOString()
+    })
     .eq('id', user.id);
   
   if (error) throw new Error('Failed to update profile');
@@ -73,13 +97,32 @@ export async function getPosts() {
 export async function createPost(postData) {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) throw new Error('Not authenticated');
+
+  let imageUrl = '';
+  
+  // Handle image upload if provided
+  if (postData.image instanceof File) {
+    const fileExt = postData.image.name.split('.').pop();
+    const fileName = `${user.id}-${Date.now()}.${fileExt}`;
+    const { data: uploadData, error: uploadError } = await supabase.storage
+      .from('post-images')
+      .upload(fileName, postData.image);
+
+    if (uploadError) throw new Error('Failed to upload image');
+
+    const { data: { publicUrl } } = supabase.storage
+      .from('post-images')
+      .getPublicUrl(fileName);
+
+    imageUrl = publicUrl;
+  }
   
   const { error } = await supabase
     .from('posts')
     .insert([{
       author_id: user.id,
       text: postData.text,
-      image_url: postData.image
+      image_url: imageUrl
     }]);
   
   if (error) throw new Error('Failed to create post');

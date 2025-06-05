@@ -66,20 +66,6 @@ function changeColorScheme() {
 
 // Load preferences and check authentication
 function initApp() {
-    const token = localStorage.getItem('token');
-    const page = window.location.pathname.split('/').pop();
-    const authPages = ['index.html', 'login.html', 'register.html'];
-
-    if (!token && !authPages.includes(page)) {
-        window.location.href = 'index.html';
-        return;
-    }
-
-    if (token && authPages.includes(page) && page !== 'index.html') {
-        window.location.href = 'home.html';
-        return;
-    }
-
     const darkModeEnabled = JSON.parse(localStorage.getItem('darkMode'));
     if (darkModeEnabled) {
         document.body.classList.add('dark-mode');
@@ -88,12 +74,7 @@ function initApp() {
     const colorScheme = localStorage.getItem('colorScheme') || 'modern';
     document.body.classList.add(`${colorScheme}-scheme`);
 
-    if (page === 'index.html' || page === 'login.html' || page === 'register.html') {
-        // Don't load home content on login or register pages
-        return;
-    }
-
-    loadContent('home-content.html'); // Load the home content by default
+    loadContent('home-content.html');
 }
 
 if (document.readyState === 'loading') {
@@ -102,353 +83,216 @@ if (document.readyState === 'loading') {
     initApp();
 }
 
-const API_BASE = 'http://localhost:3000/api';
-
-// Helper functions for local authentication with server fallback
-function getLocalUsers() {
-    return JSON.parse(localStorage.getItem('localUsers') || '[]');
-}
-
-function saveLocalUsers(users) {
-    localStorage.setItem('localUsers', JSON.stringify(users));
-}
-
-async function hashPassword(password) {
-    try {
-        if (window.crypto && window.crypto.subtle) {
-            const enc = new TextEncoder().encode(password);
-            const buf = await crypto.subtle.digest('SHA-256', enc);
-            return Array.from(new Uint8Array(buf))
-                .map(b => b.toString(16).padStart(2, '0'))
-                .join('');
-        }
-    } catch (err) {
-        console.warn('crypto.subtle not available, using CryptoJS');
-    }
-    if (window.CryptoJS) {
-        return CryptoJS.SHA256(password).toString();
-    }
-    return btoa(password);
-}
-
-async function apiGetUsers() {
-    try {
-        const res = await fetch(`${API_BASE}/users`);
-        if (!res.ok) throw new Error('Server error');
-        return await res.json();
-    } catch (err) {
-        console.warn('Falling back to local users', err);
-        return getLocalUsers();
-    }
-}
-
-function setCurrentUser(email) {
-    localStorage.setItem('token', email);
-}
-
-function logout() {
-    localStorage.removeItem('token');
-    window.location.href = 'index.html';
-}
-
-async function apiGetCurrentUser() {
-    const email = localStorage.getItem('token');
-    if (!email) return null;
-    const users = await apiGetUsers();
-    return users.find(u => u.email === email);
-}
-
-async function apiUpdateCurrentUser(updated) {
-    try {
-        await fetch(`${API_BASE}/profile`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(updated)
-        });
-    } catch (err) {
-        console.warn('Profile update failed, saving locally', err);
-        const users = getLocalUsers();
-        const idx = users.findIndex(u => u.email === updated.email);
-        if (idx !== -1) {
-            users[idx] = { ...users[idx], ...updated };
-            saveLocalUsers(users);
-        }
-    }
-}
-
-// Handle registration
-if (document.getElementById('registerForm')) {
-    document.getElementById('registerForm').addEventListener('submit', async (e) => {
-        e.preventDefault();
-        showLoader();
-        try {
-            const name = document.getElementById('name').value.trim();
-            const email = document.getElementById('email').value.trim();
-            const password = document.getElementById('password').value;
-
-            const res = await fetch(`${API_BASE}/register`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ name, email, password })
-            });
-            if (!res.ok) {
-                const data = await res.json();
-                document.getElementById('registerMessage').textContent = data.error || 'Registration failed.';
-                return;
-            }
-            document.getElementById('registerMessage').textContent = 'Registration successful! Please log in.';
-            setTimeout(() => {
-                window.location.href = 'index.html';
-            }, 500);
-        } catch (err) {
-            console.warn('Server register failed, using local storage', err);
-            const name = document.getElementById('name').value.trim();
-            const email = document.getElementById('email').value.trim();
-            const password = document.getElementById('password').value;
-            const users = getLocalUsers();
-            if (users.some(u => u.email === email)) {
-                document.getElementById('registerMessage').textContent = 'Email already registered.';
-            } else {
-                const passwordHash = await hashPassword(password);
-                users.push({ name, email, passwordHash, bio: '', image: '' });
-                saveLocalUsers(users);
-                document.getElementById('registerMessage').textContent = 'Registration successful! Please log in.';
-                setTimeout(() => {
-                    window.location.href = 'index.html';
-                }, 500);
-            }
-        } finally {
-            hideLoader();
-        }
-    });
-}
-
-// Handle login
-if (document.getElementById('loginForm')) {
-    document.getElementById('loginForm').addEventListener('submit', async (e) => {
-        e.preventDefault();
-        showLoader();
-        try {
-            const email = document.getElementById('loginEmail').value.trim();
-            const password = document.getElementById('loginPassword').value;
-
-            const res = await fetch(`${API_BASE}/login`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email, password })
-            });
-            if (res.ok) {
-                setCurrentUser(email);
-                window.location.href = 'home.html';
-            } else {
-                const data = await res.json();
-                document.getElementById('loginMessage').textContent = data.error || 'Invalid credentials.';
-            }
-        } catch (err) {
-            console.warn('Server login failed, using local storage', err);
-            const email = document.getElementById('loginEmail').value.trim();
-            const password = document.getElementById('loginPassword').value;
-            const users = getLocalUsers();
-            const user = users.find(u => u.email === email);
-            if (user && (await hashPassword(password)) === user.passwordHash) {
-                setCurrentUser(email);
-                window.location.href = 'home.html';
-            } else {
-                document.getElementById('loginMessage').textContent = 'Invalid credentials.';
-            }
-        } finally {
-            hideLoader();
-        }
-    });
-}
-
 // Profile page setup
 async function setupProfilePage() {
     const form = document.getElementById('profileForm');
     if (!form) return;
-    const user = await apiGetCurrentUser();
-    if (!user) return;
 
-    const nameInput = document.getElementById('profileName');
-    const bioInput = document.getElementById('profileBio');
-    const pictureInput = document.getElementById('profilePicture');
-    const preview = document.getElementById('profilePreview');
+    try {
+        const user = await getProfile();
+        if (!user) return;
 
-    nameInput.value = user.name || '';
-    bioInput.value = user.bio || '';
-    if (user.image) {
-        preview.src = user.image;
-    }
+        const nameInput = document.getElementById('profileName');
+        const bioInput = document.getElementById('profileBio');
+        const pictureInput = document.getElementById('profilePicture');
+        const preview = document.getElementById('profilePreview');
+        const message = document.getElementById('profileMessage');
 
-    pictureInput.addEventListener('change', () => {
-        const file = pictureInput.files[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = e => {
-                preview.src = e.target.result;
-            };
-            reader.readAsDataURL(file);
+        nameInput.value = user.name || '';
+        bioInput.value = user.bio || '';
+        if (user.image_url) {
+            preview.src = user.image_url;
+        } else {
+            preview.src = 'https://via.placeholder.com/150';
         }
-    });
+
+        pictureInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    preview.src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const saveButton = form.querySelector('button[type="submit"]');
+            const originalText = saveButton.innerHTML;
+            
+            try {
+                saveButton.disabled = true;
+                saveButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+                message.textContent = '';
+
+                await updateProfile({
+                    name: nameInput.value.trim(),
+                    bio: bioInput.value.trim(),
+                    image: pictureInput.files[0]
+                });
+
+                message.style.color = 'var(--secondary-color)';
+                message.textContent = 'Profile updated successfully!';
+            } catch (error) {
+                message.style.color = '#dc2626';
+                message.textContent = `Error: ${error.message}`;
+            } finally {
+                saveButton.disabled = false;
+                saveButton.innerHTML = originalText;
+            }
+        });
+    } catch (error) {
+        console.error('Error setting up profile:', error);
+    }
+}
+
+// Posts setup
+async function setupHomePage() {
+    const form = document.getElementById('postForm');
+    if (!form) return;
 
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
         showLoader();
-
-        user.name = nameInput.value.trim();
-        user.bio = bioInput.value.trim();
-
-        const file = pictureInput.files[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = async ev => {
-                user.image = ev.target.result;
-                await apiUpdateCurrentUser(user);
-                document.getElementById('profileMessage').textContent = 'Profile updated.';
-                hideLoader();
-            };
-            reader.readAsDataURL(file);
-        } else {
-            await apiUpdateCurrentUser(user);
-            document.getElementById('profileMessage').textContent = 'Profile updated.';
+        
+        try {
+            const text = document.getElementById('postText').value.trim();
+            const file = document.getElementById('postImage').files[0];
+            
+            await createPost({ text, image: file });
+            form.reset();
+            await renderPosts();
+        } catch (error) {
+            console.error('Error creating post:', error);
+        } finally {
             hideLoader();
         }
     });
+
+    await renderPosts();
 }
 
-// ----- Posts -----
-function getPosts() {
-    return JSON.parse(localStorage.getItem('posts') || '[]');
-}
-
-function savePosts(posts) {
-    localStorage.setItem('posts', JSON.stringify(posts));
-}
-
-function renderPosts() {
+async function renderPosts() {
     const container = document.getElementById('postsContainer');
     if (!container) return;
-    container.innerHTML = '';
-    const posts = getPosts();
-    apiGetUsers().then(users => {
-    posts.slice().reverse().forEach(p => {
-        const user = users.find(u => u.email === p.email) || { name: p.email };
-        const div = document.createElement('div');
-        div.className = 'feed-item';
-        const img = document.createElement('img');
-        img.className = 'profile-pic';
-        img.src = user.image || 'profile1.jpg';
-        const content = document.createElement('div');
-        content.className = 'post-content';
-        const h3 = document.createElement('h3');
-        h3.textContent = user.name;
-        const pText = document.createElement('p');
-        pText.textContent = p.text;
-        content.appendChild(h3);
-        content.appendChild(pText);
-        if (p.image) {
-            const pImg = document.createElement('img');
-            pImg.src = p.image;
-            pImg.className = 'post-image';
-            content.appendChild(pImg);
-        }
-        div.appendChild(img);
-        div.appendChild(content);
-        container.appendChild(div);
-    });
-    });
+    
+    try {
+        container.innerHTML = '';
+        const posts = await getPosts();
+        
+        posts.forEach(post => {
+            const div = document.createElement('div');
+            div.className = 'feed-item';
+            
+            const img = document.createElement('img');
+            img.className = 'profile-pic';
+            img.src = post.author?.image_url || 'https://via.placeholder.com/50';
+            
+            const content = document.createElement('div');
+            content.className = 'post-content';
+            
+            const h3 = document.createElement('h3');
+            h3.textContent = post.author?.name || 'Anonymous';
+            
+            const pText = document.createElement('p');
+            pText.textContent = post.text;
+            
+            content.appendChild(h3);
+            content.appendChild(pText);
+            
+            if (post.image_url) {
+                const pImg = document.createElement('img');
+                pImg.src = post.image_url;
+                pImg.className = 'post-image';
+                content.appendChild(pImg);
+            }
+            
+            div.appendChild(img);
+            div.appendChild(content);
+            container.appendChild(div);
+        });
+    } catch (error) {
+        console.error('Error rendering posts:', error);
+        container.innerHTML = '<p class="error">Failed to load posts.</p>';
+    }
 }
 
-async function setupHomePage() {
-    const form = document.getElementById('postForm');
-    if (!form) return;
-    const user = await apiGetCurrentUser();
-    form.addEventListener('submit', e => {
-        e.preventDefault();
-        showLoader();
-        if (!user) return;
-        const text = document.getElementById('postText').value.trim();
-        const file = document.getElementById('postImage').files[0];
-        const newPost = { email: user.email, text, image: '' };
-        const saveAndRender = () => {
-            const posts = getPosts();
-            posts.push(newPost);
-            savePosts(posts);
-            form.reset();
-            renderPosts();
-            hideLoader();
-        };
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = ev => {
-                newPost.image = ev.target.result;
-                saveAndRender();
-            };
-            reader.readAsDataURL(file);
-        } else {
-            saveAndRender();
-        }
-    });
-    renderPosts();
-}
+// Messages setup
+async function setupMessagesPage() {
+    const form = document.getElementById('chatForm');
+    const select = document.getElementById('chatUserSelect');
+    if (!form || !select) return;
 
-// ----- Chat -----
-async function apiGetMessages(user1, user2) {
-    const res = await fetch(`${API_BASE}/messages?user1=${encodeURIComponent(user1)}&user2=${encodeURIComponent(user2)}`);
-    return await res.json();
-}
-
-async function apiSendMessage(from, to, text) {
-    await fetch(`${API_BASE}/messages`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ from, to, text })
-    });
+    try {
+        const users = await getUsers();
+        const currentUser = await getProfile();
+        
+        select.innerHTML = users
+            .filter(u => u.id !== currentUser.id)
+            .map(u => `<option value="${u.id}">${u.name}</option>`)
+            .join('');
+            
+        let activeUser = select.value;
+        
+        select.addEventListener('change', () => {
+            activeUser = select.value;
+            renderMessages(activeUser);
+        });
+        
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const input = document.getElementById('chatInput');
+            const text = input.value.trim();
+            if (!text) return;
+            
+            try {
+                await sendMessage(activeUser, text);
+                input.value = '';
+                await renderMessages(activeUser);
+            } catch (error) {
+                console.error('Error sending message:', error);
+            }
+        });
+        
+        await renderMessages(activeUser);
+    } catch (error) {
+        console.error('Error setting up messages:', error);
+    }
 }
 
 async function renderMessages(withUser) {
     const container = document.getElementById('chatMessages');
     if (!container) return;
-    container.innerHTML = '';
-    const current = localStorage.getItem('token');
-    const msgs = await apiGetMessages(current, withUser);
-    msgs.forEach(m => {
-        const div = document.createElement('div');
-        div.className = 'chat-item';
-        const content = document.createElement('div');
-        content.className = 'chat-content';
-        const h3 = document.createElement('h3');
-        h3.textContent = m.from === current ? 'You' : withUser;
-        const p = document.createElement('p');
-        p.textContent = m.text;
-        content.appendChild(h3);
-        content.appendChild(p);
-        div.appendChild(content);
-        container.appendChild(div);
-    });
-    container.scrollTop = container.scrollHeight;
-}
-
-async function setupMessagesPage() {
-    const form = document.getElementById('chatForm');
-    const select = document.getElementById('chatUserSelect');
-    if (!form || !select) return;
-    const users = await apiGetUsers();
-    const current = localStorage.getItem('token');
-    select.innerHTML = users.filter(u => u.email !== current).map(u => `<option value="${u.email}">${u.name}</option>`).join('');
-    let activeUser = select.value;
-    select.addEventListener('change', () => {
-        activeUser = select.value;
-        renderMessages(activeUser);
-    });
-    form.addEventListener('submit', async e => {
-        e.preventDefault();
-        const input = document.getElementById('chatInput');
-        const text = input.value.trim();
-        if (!text) return;
-        await apiSendMessage(current, activeUser, text);
-        input.value = '';
-        renderMessages(activeUser);
-    });
-    renderMessages(activeUser);
+    
+    try {
+        container.innerHTML = '';
+        const messages = await getMessages(withUser);
+        const currentUser = await getProfile();
+        
+        messages.forEach(msg => {
+            const div = document.createElement('div');
+            div.className = 'chat-item';
+            
+            const content = document.createElement('div');
+            content.className = 'chat-content';
+            
+            const h3 = document.createElement('h3');
+            h3.textContent = msg.from_id === currentUser.id ? 'You' : withUser;
+            
+            const p = document.createElement('p');
+            p.textContent = msg.text;
+            
+            content.appendChild(h3);
+            content.appendChild(p);
+            div.appendChild(content);
+            container.appendChild(div);
+        });
+        
+        container.scrollTop = container.scrollHeight;
+    } catch (error) {
+        console.error('Error rendering messages:', error);
+        container.innerHTML = '<p class="error">Failed to load messages.</p>';
+    }
 }
