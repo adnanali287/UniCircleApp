@@ -17,14 +17,67 @@
   <main style="display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 80vh; padding: 0 1rem;">
     <h1 style="font-size: 2.5rem; font-weight: 600; margin-bottom: 2rem;">Log in</h1>
     <form id="loginForm" style="width: 100%; max-width: 340px; display: flex; flex-direction: column; gap: 1rem;">
-      <input type="email" id="loginEmail" placeholder="Email address" required style="padding: 0.9rem; font-size: 1rem; border: 1px solid #ccc; border-radius: 10px;" />
-      <input type="password" id="loginPassword" placeholder="Password" required style="padding: 0.9rem; font-size: 1rem; border: 1px solid #ccc; border-radius: 10px;" />
-      <button type="submit" style="background-color: #7b4eff; color: white; padding: 0.9rem; font-size: 1rem; border: none; border-radius: 10px; cursor: pointer;">Log in</button>
+      <input 
+        type="email" 
+        id="loginEmail" 
+        placeholder="Email address" 
+        required 
+        pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$"
+        style="padding: 0.9rem; font-size: 1rem; border: 1px solid #ccc; border-radius: 10px;" 
+      />
+      <input 
+        type="password" 
+        id="loginPassword" 
+        placeholder="Password" 
+        required 
+        minlength="8"
+        style="padding: 0.9rem; font-size: 1rem; border: 1px solid #ccc; border-radius: 10px;" 
+      />
+      <button type="submit" style="background-color: #7b4eff; color: white; padding: 0.9rem; font-size: 1rem; border: none; border-radius: 10px; cursor: pointer;">
+        <span id="loginButtonText">Log in</span>
+      </button>
     </form>
-    <p style="margin-top: 1.5rem; font-size: 0.9rem;">Don’t have an account? <a href="register.html" style="color: #7b4eff; text-decoration: none;">Sign up</a></p>
+    <div id="loginMessage" style="margin-top: 1rem; text-align: center; color: #dc2626;"></div>
+    <p style="margin-top: 1.5rem; font-size: 0.9rem;">Don't have an account? <a href="register.html" style="color: #7b4eff; text-decoration: none;">Sign up</a></p>
   </main>
 
-  <script src="https://cdn.jsdelivr.net/npm/crypto-js@4.1.1/crypto-js.min.js"></script>
-  <script src="script.js"></script>
+  <script type="module">
+    import { login } from './js/auth.js';
+    
+    const form = document.getElementById('loginForm');
+    const message = document.getElementById('loginMessage');
+    const buttonText = document.getElementById('loginButtonText');
+    
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      const email = document.getElementById('loginEmail').value.trim();
+      const password = document.getElementById('loginPassword').value;
+      
+      // Basic validation
+      if (!email.match(/[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$/i)) {
+        message.textContent = 'Please enter a valid email address';
+        return;
+      }
+      
+      if (password.length < 8) {
+        message.textContent = 'Password must be at least 8 characters';
+        return;
+      }
+      
+      try {
+        buttonText.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Logging in...';
+        form.querySelector('button').disabled = true;
+        message.textContent = '';
+        
+        await login(email, password);
+        window.location.href = 'home.html';
+      } catch (error) {
+        message.textContent = error.message;
+        buttonText.textContent = 'Log in';
+        form.querySelector('button').disabled = false;
+      }
+    });
+  </script>
 </body>
 </html>

@@ -1,7 +1,7 @@
 import { supabase } from './supabase.js';
 
 export function isAuthenticated() {
-  return !!localStorage.getItem('sb-token');
+  return supabase.auth.getSession().then(({ data: { session } }) => !!session);
 }
 
 export async function login(email, password) {
@@ -10,6 +10,7 @@ export async function login(email, password) {
       email,
       password
     });
+    
     if (error) throw error;
     return data.user;
   } catch (error) {
@@ -26,7 +27,19 @@ export async function register(name, email, password) {
         data: { name }
       }
     });
+    
     if (error) throw error;
+    
+    // Create user profile
+    const { error: profileError } = await supabase
+      .from('users')
+      .insert([{
+        id: data.user.id,
+        name,
+        email
+      }]);
+    
+    if (profileError) throw profileError;
     return data.user;
   } catch (error) {
     throw new Error(error.message || 'Registration failed');
