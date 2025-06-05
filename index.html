@@ -1,29 +1,197 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>UniCircle - Connect Your Campus</title>
-    <link rel="stylesheet" href="styles.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lobster&family=Poppins:wght@400;600;700&display=swap">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>UniCircle - Connect Your Campus</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Poppins:wght@700&display=swap" rel="stylesheet" />
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Inter', sans-serif;
+      background: #f9f9ff;
+      color: #333;
+    }
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1.2rem 2rem;
+      background: #fff;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    }
+    .logo {
+      font-family: 'Poppins', sans-serif;
+      font-size: 1.6rem;
+      color: #5a32ea;
+      font-weight: 700;
+      text-decoration: none;
+    }
+    nav a {
+      margin-left: 1rem;
+      text-decoration: none;
+      color: #5a32ea;
+      font-weight: 600;
+    }
+    .hero {
+      padding: 4rem 2rem;
+      text-align: center;
+      background: linear-gradient(to right, #e7e6fd, #f9f9ff);
+    }
+    .hero h1 {
+      font-family: 'Poppins', sans-serif;
+      font-size: 2.8rem;
+      margin-bottom: 0.5rem;
+    }
+    .hero p {
+      font-size: 1.1rem;
+      max-width: 600px;
+      margin: 0 auto 2rem;
+      color: #555;
+    }
+    .hero .cta {
+      margin-top: 1rem;
+    }
+    .hero .cta a {
+      padding: 0.75rem 1.5rem;
+      margin: 0 0.5rem;
+      font-size: 1rem;
+      border-radius: 30px;
+      border: none;
+      cursor: pointer;
+      text-decoration: none;
+    }
+    .join-btn {
+      background: #5a32ea;
+      color: white;
+    }
+    .how-btn {
+      background: #fff;
+      color: #5a32ea;
+      border: 2px solid #5a32ea;
+    }
+    .cards {
+      display: flex;
+      overflow-x: auto;
+      gap: 1.5rem;
+      padding: 2rem 1rem;
+      scroll-snap-type: x mandatory;
+    }
+    .card {
+      min-width: 280px;
+      scroll-snap-align: center;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+      padding: 1.5rem;
+      text-align: center;
+      flex-shrink: 0;
+    }
+    .card h3 {
+      margin: 0.5rem 0;
+      color: #5a32ea;
+    }
+    .card p {
+      font-size: 0.95rem;
+      color: #555;
+    }
+    .card button {
+      margin-top: 1rem;
+      background: #5a32ea;
+      color: white;
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: 20px;
+      cursor: pointer;
+    }
+    .features {
+      text-align: center;
+      padding: 3rem 1rem;
+    }
+    .features h2 {
+      font-family: 'Poppins', sans-serif;
+      margin-bottom: 1rem;
+    }
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1.5rem;
+      max-width: 1000px;
+      margin: 0 auto;
+      margin-top: 2rem;
+    }
+    .feature {
+      background: #fff;
+      padding: 1rem;
+      border-radius: 8px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+    }
+    .feature i {
+      font-size: 2rem;
+      color: #5a32ea;
+    }
+    footer {
+      text-align: center;
+      padding: 1.5rem;
+      background: #f2f2ff;
+      font-size: 0.9rem;
+    }
+  </style>
 </head>
 <body>
-    <div class="app landing-app">
-        <header class="app-header landing-header">
-            <h1>UniCircle</h1>
-        </header>
-        <main class="landing-main">
-            <div class="landing-container">
-                <h2 class="landing-title">Connect Your Campus</h2>
-                <p class="landing-tagline">A modern hub for university life</p>
-                <div class="landing-actions">
-                    <a href="register.html" class="landing-button signup-btn">Sign Up</a>
-                    <a href="login.html" class="landing-button login-btn">Log In</a>
-                </div>
-            </div>
-        </main>
+
+  <header>
+    <a class="logo" href="#">UniCircle</a>
+    <nav>
+      <a href="login.html">Log In</a>
+      <a href="register.html">Sign Up</a>
+    </nav>
+  </header>
+
+  <section class="hero">
+    <h1>Connect Your Campus</h1>
+    <p>A vibrant digital space for university students to network, collaborate, and thrive.</p>
+    <div class="cta">
+      <a class="join-btn" href="register.html">Join Now</a>
+      <a class="how-btn" href="#features">See How It Works</a>
     </div>
-    <script src="script.js"></script>
+  </section>
+
+  <section class="cards">
+    <div class="card">
+      <div>📚</div>
+      <h3>Study Circles</h3>
+      <p>Join or create study groups for better learning and collaboration.</p>
+      <button>Explore</button>
+    </div>
+    <div class="card">
+      <div>🛍️</div>
+      <h3>Campus Marketplace</h3>
+      <p>Buy & sell books, gadgets, and more within your university.</p>
+      <button>Browse</button>
+    </div>
+    <div class="card">
+      <div>🎉</div>
+      <h3>Events Feed</h3>
+      <p>Stay in the loop with parties, meetups, and university events.</p>
+      <button>Discover</button>
+    </div>
+  </section>
+
+  <section id="features" class="features">
+    <h2>Why UniCircle?</h2>
+    <div class="features-grid">
+      <div class="feature"><i class="fas fa-graduation-cap"></i><p>Built for students, by students</p></div>
+      <div class="feature"><i class="fas fa-lock"></i><p>Safe and private for your campus</p></div>
+      <div class="feature"><i class="fas fa-bolt"></i><p>Fast and easy to use interface</p></div>
+    </div>
+  </section>
+
+  <footer>
+    &copy; 2025 UniCircle • Built with ❤️ for campus life
+  </footer>
+
 </body>
 </html>
