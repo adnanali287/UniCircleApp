@@ -1,12 +1,42 @@
-<h2>Circles</h2>
-<ul class="circle-list">
-    <li onclick="loadContent('confessions.html')">Confessions</li>
-    <li onclick="loadContent('badminton.html')">Badminton</li>
-    <li onclick="loadContent('gaming.html')">Gaming</li>
-    <li onclick="loadContent('gym.html')">Gym</li>
-    <li onclick="loadContent('medicine.html')">Medicine</li>
-    <li onclick="loadContent('library.html')">Library</li>
-    <li onclick="loadContent('taylorswift.html')">Taylor Swift</li>
-    <li onclick="loadContent('groupstudy.html')">Group Study</li>
-</ul>
-<button onclick="loadContent('home-content.html')">Back to Home</button>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Circles - UniCircle</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+</head>
+<body style="margin: 0; font-family: 'Inter', sans-serif; background: #f9f9ff; color: #111;">
+
+  <header style="display: flex; justify-content: space-between; align-items: center; padding: 1.5rem 2rem; border-bottom: 1px solid #eee;">
+    <a href="index.html" style="text-decoration: none; color: #7b4eff; font-size: 1.5rem; font-weight: 600;">UniCircle</a>
+    <button onclick="loadContent('home.html')" style="background: none; border: none; color: #7b4eff; font-size: 1.2rem;">
+      <i class="fas fa-home"></i>
+    </button>
+  </header>
+
+  <main style="padding: 2rem; padding-bottom: 4rem;">
+    <h2 style="text-align: center; font-size: 1.6rem; font-weight: 600; margin-bottom: 2rem;">Circles</h2>
+    <ul style="list-style: none; padding: 0; max-width: 500px; margin: 0 auto; display: flex; flex-direction: column; gap: 1rem;">
+      <li onclick="loadContent('confessions.html')" style="padding: 1rem; background: #fff; border-radius: 8px; cursor: pointer; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">Confessions</li>
+      <li onclick="loadContent('badminton.html')" style="padding: 1rem; background: #fff; border-radius: 8px; cursor: pointer; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">Badminton</li>
+      <li onclick="loadContent('gaming.html')" style="padding: 1rem; background: #fff; border-radius: 8px; cursor: pointer; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">Gaming</li>
+      <li onclick="loadContent('gym.html')" style="padding: 1rem; background: #fff; border-radius: 8px; cursor: pointer; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">Gym</li>
+      <li onclick="loadContent('medicine.html')" style="padding: 1rem; background: #fff; border-radius: 8px; cursor: pointer; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">Medicine</li>
+      <li onclick="loadContent('library.html')" style="padding: 1rem; background: #fff; border-radius: 8px; cursor: pointer; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">Library</li>
+      <li onclick="loadContent('taylorswift.html')" style="padding: 1rem; background: #fff; border-radius: 8px; cursor: pointer; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">Taylor Swift</li>
+      <li onclick="loadContent('groupstudy.html')" style="padding: 1rem; background: #fff; border-radius: 8px; cursor: pointer; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">Group Study</li>
+    </ul>
+  </main>
+
+  <nav style="position: fixed; bottom: 0; width: 100%; display: flex; justify-content: space-around; background: #fff; border-top: 1px solid #eee; padding: 0.75rem 0;">
+    <button onclick="loadContent('home-content.html')" style="background: none; border: none; color: #888; font-size: 1.2rem;"><i class="fas fa-home"></i></button>
+    <button onclick="loadContent('circles.html')" style="background: none; border: none; color: #7b4eff; font-size: 1.2rem;"><i class="fas fa-users"></i></button>
+    <button onclick="loadContent('profile.html')" style="background: none; border: none; color: #888; font-size: 1.2rem;"><i class="fas fa-user"></i></button>
+  </nav>
+
+  <script src="script.js"></script>
+</body>
+</html>
