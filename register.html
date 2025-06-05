@@ -100,7 +100,7 @@
         
         await register(name, email, password);
         message.style.color = '#10b981';
-        message.textContent = 'Account created successfully! Redirecting...';
+        message.textContent = 'Account created successfully! Please check your email to confirm your account.';
         setTimeout(() => {
           window.location.href = 'login.html';
         }, 2000);
