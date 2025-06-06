@@ -22,7 +22,7 @@ export default function App() {
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
             <Route path="/" element={<ProtectedRoute />}>
-              <Route index element={<Navigate to="/home" replace />} />
+              <Route index element={<Navigate to="/home\" replace />} />
               <Route path="home" element={<Home />} />
               <Route path="profile" element={<Profile />} />
               <Route path="circles" element={<Circles />} />
