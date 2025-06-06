@@ -36,11 +36,11 @@ export async function getProfile() {
   const { data, error } = await supabase
     .from('users')
     .select('*')
-    .eq('id', user.id)
-    .single();
+    .eq('id', user.id);
   
   if (error) throw new Error('Failed to fetch profile');
-  return data;
+  if (!data || data.length === 0) throw new Error('Profile not found');
+  return data[0];
 }
 
 export async function updateProfile(profileData) {
@@ -86,12 +86,15 @@ export async function getPosts() {
     .from('posts')
     .select(`
       *,
-      author:users(name, image_url)
+      users!posts_author_id_fkey (name, image_url)
     `)
     .order('created_at', { ascending: false });
   
   if (error) throw new Error('Failed to fetch posts');
-  return data;
+  return data.map(post => ({
+    ...post,
+    author: post.users
+  }));
 }
 
 export async function createPost(postData) {
