@@ -10,7 +10,11 @@
     <script type="importmap">
     {
       "imports": {
-        "@supabase/supabase-js": "./node_modules/@supabase/supabase-js/dist/module/index.js"
+        "@supabase/supabase-js": "./node_modules/@supabase/supabase-js/dist/module/index.js",
+        "./js/api.js": "./js/api.js",
+        "./js/utils.js": "./js/utils.js",
+        "./js/supabase.js": "./js/supabase.js",
+        "./js/auth.js": "./js/auth.js"
       }
     }
     </script>
@@ -18,7 +22,7 @@
 <body>
     <header>
         <a href="#" class="logo">UniCircle</a>
-        <button onclick="logout()" aria-label="Log out">
+        <button id="logoutBtn" aria-label="Log out">
             <i class="fas fa-sign-out-alt"></i>
         </button>
     </header>
@@ -30,17 +34,31 @@
     </main>
 
     <nav class="bottom-nav">
-        <button onclick="loadContent('home-content.html')" class="active">
+        <button id="homeBtn" class="active">
             <i class="fas fa-home"></i>
         </button>
-        <button onclick="loadContent('circles.html')">
+        <button id="circlesBtn">
             <i class="fas fa-users"></i>
         </button>
-        <button onclick="loadContent('profile.html')">
+        <button id="profileBtn">
             <i class="fas fa-user"></i>
         </button>
     </nav>
 
-    <script type="module" src="script.js"></script>
+    <script type="module">
+        import { loadContent, toggleDarkMode, changeColorScheme, logout } from './script.js';
+        
+        // Set up event listeners after import
+        document.getElementById('homeBtn').addEventListener('click', () => loadContent('home-content.html'));
+        document.getElementById('circlesBtn').addEventListener('click', () => loadContent('circles.html'));
+        document.getElementById('profileBtn').addEventListener('click', () => loadContent('profile.html'));
+        document.getElementById('logoutBtn').addEventListener('click', logout);
+        
+        // Make functions globally available
+        window.loadContent = loadContent;
+        window.toggleDarkMode = toggleDarkMode;
+        window.changeColorScheme = changeColorScheme;
+        window.logout = logout;
+    </script>
 </body>
 </html>

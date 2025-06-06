@@ -61,7 +61,7 @@ function updateActiveNav(page) {
   const buttons = document.querySelectorAll('.bottom-nav button');
   buttons.forEach(button => {
     button.classList.remove('active');
-    if (button.onclick.toString().includes(page)) {
+    if (button.onclick && button.onclick.toString().includes(page)) {
       button.classList.add('active');
     }
   });
@@ -220,17 +220,13 @@ if (document.readyState === 'loading') {
   initApp();
 }
 
-// Make functions available globally for inline event handlers
-window.loadContent = loadContent;
-window.logout = logout;
-
 // Theme functions
-window.toggleDarkMode = function() {
+function toggleDarkMode() {
   const darkMode = document.body.classList.toggle('dark-mode');
   localStorage.setItem('darkMode', darkMode);
-};
+}
 
-window.changeColorScheme = function() {
+function changeColorScheme() {
   const select = document.getElementById('colorScheme');
   const scheme = select.value;
   
@@ -245,11 +241,12 @@ window.changeColorScheme = function() {
   
   document.body.classList.add(`${scheme}-scheme`);
   localStorage.setItem('colorScheme', scheme);
-};
+}
 
 // Export necessary functions for module imports
 export {
   loadContent,
   toggleDarkMode,
-  changeColorScheme
+  changeColorScheme,
+  logout
 };
