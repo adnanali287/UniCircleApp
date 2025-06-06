@@ -24,7 +24,7 @@ function initializeRealtime() {
         event: 'INSERT',
         schema: 'public',
         table: 'messages'
-      }, payload => {
+      }, async payload => {  // Added async keyword here
         const currentUser = await getProfile();
         if (payload.new.from_id === currentUser.id || payload.new.to_id === currentUser.id) {
           renderNewMessage(payload.new);
