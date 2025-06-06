@@ -7,138 +7,10 @@
   <link rel="stylesheet" href="styles.css" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Poppins:wght@700&display=swap" rel="stylesheet" />
-  <style>
-    body {
-      margin: 0;
-      font-family: 'Inter', sans-serif;
-      background: #f9f9ff;
-      color: #333;
-    }
-    header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 1.2rem 2rem;
-      background: #fff;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-    }
-    .logo {
-      font-family: 'Poppins', sans-serif;
-      font-size: 1.6rem;
-      color: #5a32ea;
-      font-weight: 700;
-      text-decoration: none;
-    }
-    nav a {
-      margin-left: 1rem;
-      text-decoration: none;
-      color: #5a32ea;
-      font-weight: 600;
-    }
-    .hero {
-      padding: 4rem 2rem;
-      text-align: center;
-      background: linear-gradient(to right, #e7e6fd, #f9f9ff);
-    }
-    .hero h1 {
-      font-family: 'Poppins', sans-serif;
-      font-size: 2.8rem;
-      margin-bottom: 0.5rem;
-    }
-    .hero p {
-      font-size: 1.1rem;
-      max-width: 600px;
-      margin: 0 auto 2rem;
-      color: #555;
-    }
-    .hero .cta {
-      margin-top: 1rem;
-    }
-    .hero .cta a {
-      padding: 0.75rem 1.5rem;
-      margin: 0 0.5rem;
-      font-size: 1rem;
-      border-radius: 30px;
-      border: none;
-      cursor: pointer;
-      text-decoration: none;
-    }
-    .join-btn {
-      background: #5a32ea;
-      color: white;
-    }
-    .how-btn {
-      background: #fff;
-      color: #5a32ea;
-      border: 2px solid #5a32ea;
-    }
-    .cards {
-      display: flex;
-      overflow-x: auto;
-      gap: 1.5rem;
-      padding: 2rem 1rem;
-      scroll-snap-type: x mandatory;
-    }
-    .card {
-      min-width: 280px;
-      scroll-snap-align: center;
-      background: white;
-      border-radius: 12px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-      padding: 1.5rem;
-      text-align: center;
-      flex-shrink: 0;
-    }
-    .card h3 {
-      margin: 0.5rem 0;
-      color: #5a32ea;
-    }
-    .card p {
-      font-size: 0.95rem;
-      color: #555;
-    }
-    .card button {
-      margin-top: 1rem;
-      background: #5a32ea;
-      color: white;
-      border: none;
-      padding: 0.5rem 1rem;
-      border-radius: 20px;
-      cursor: pointer;
-    }
-    .features {
-      text-align: center;
-      padding: 3rem 1rem;
-    }
-    .features h2 {
-      font-family: 'Poppins', sans-serif;
-      margin-bottom: 1rem;
-    }
-    .features-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 1.5rem;
-      max-width: 1000px;
-      margin: 0 auto;
-      margin-top: 2rem;
-    }
-    .feature {
-      background: #fff;
-      padding: 1rem;
-      border-radius: 8px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.06);
-    }
-    .feature i {
-      font-size: 2rem;
-      color: #5a32ea;
-    }
-    footer {
-      text-align: center;
-      padding: 1.5rem;
-      background: #f2f2ff;
-      font-size: 0.9rem;
-    }
-  </style>
+  <script type="module">
+    import { initApp } from './script.js';
+    window.initApp = initApp;
+  </script>
 </head>
 <body style="margin:0; font-family: 'Inter', sans-serif; background: #f9f9ff; color: #111;">
   <header style="display: flex; justify-content: space-between; align-items: center; padding: 1.5rem 2rem;">
@@ -151,7 +23,7 @@
 
   <main style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 80vh; text-align: center; padding: 0 1rem;">
     <h1 style="font-size: 2.8rem; font-weight: 600; margin-bottom: 1rem;">Your Campus, <br />Connected.</h1>
-    <p style="font-size: 1.1rem; color: #555; margin-bottom: 2.5rem;">Join your university’s private social space.</p>
+    <p style="font-size: 1.1rem; color: #555; margin-bottom: 2.5rem;">Join your university's private social space.</p>
     <a href="register.html" style="background-color: #7b4eff; color: white; padding: 0.8rem 2rem; border-radius: 12px; text-decoration: none; font-weight: 500; font-size: 1rem; margin-bottom: 1rem;">Join UniCircle</a>
     <a href="#features" style="margin-top: 0.5rem; font-size: 0.95rem; color: #555; text-decoration: none;">See how it works →</a>
   </main>
