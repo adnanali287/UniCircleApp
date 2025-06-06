@@ -1,6 +1,7 @@
 import { getProfile, updateProfile, getPosts, createPost, getUsers, getMessages, sendMessage } from './js/api.js';
 import { formatRelativeTime, showToast } from './js/utils.js';
 import { supabase } from './js/supabase.js';
+import { logout } from './js/auth.js';
 
 // Initialize real-time subscriptions
 function initializeRealtime() {
@@ -112,6 +113,31 @@ async function setupProfilePage() {
   }
 }
 
+// Theme functions
+function toggleDarkMode() {
+  const darkMode = document.body.classList.toggle('dark-mode');
+  localStorage.setItem('darkMode', darkMode);
+}
+
+function changeColorScheme() {
+  const select = document.getElementById('colorScheme');
+  const scheme = select.value;
+  
+  // Remove all existing color scheme classes
+  document.body.classList.remove(
+    'default-scheme',
+    'red-scheme',
+    'blue-scheme',
+    'green-scheme',
+    'purple-scheme',
+    'modern-scheme'
+  );
+  
+  // Add the new color scheme class
+  document.body.classList.add(`${scheme}-scheme`);
+  localStorage.setItem('colorScheme', scheme);
+}
+
 // Initialize the app
 async function initApp() {
   try {
@@ -147,7 +173,13 @@ if (document.readyState === 'loading') {
   initApp();
 }
 
-// Export necessary functions
+// Make functions available globally for inline event handlers
+window.loadContent = loadContent;
+window.toggleDarkMode = toggleDarkMode;
+window.changeColorScheme = changeColorScheme;
+window.logout = logout;
+
+// Export necessary functions for module imports
 export {
   loadContent,
   toggleDarkMode,
