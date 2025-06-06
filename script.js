@@ -1,4 +1,4 @@
-import { getProfile, updateProfile, getPosts, createPost, getUsers, getMessages, sendMessage } from './js/api.js';
+import { getProfile, updateProfile, getPosts, createPost, getMessages, sendMessage } from './js/api.js';
 import { formatRelativeTime, showToast } from './js/utils.js';
 import { supabase } from './js/supabase.js';
 import { logout } from './js/auth.js';
@@ -25,7 +25,7 @@ function initializeRealtime() {
         event: 'INSERT',
         schema: 'public',
         table: 'messages'
-      }, async payload => {  // Added async keyword here
+      }, async payload => {
         const currentUser = await getProfile();
         if (payload.new.from_id === currentUser.id || payload.new.to_id === currentUser.id) {
           renderNewMessage(payload.new);
@@ -49,12 +49,22 @@ async function loadContent(page) {
     if (page.includes('home')) await setupHomePage();
     if (page.includes('messages')) await setupMessagesPage();
     
-    // Update UI state
-    updateUIState();
+    // Update active state in bottom navigation
+    updateActiveNav(page);
   } catch (error) {
     console.error('Error loading content:', error);
     showToast(error.message, 'error');
   }
+}
+
+function updateActiveNav(page) {
+  const buttons = document.querySelectorAll('.bottom-nav button');
+  buttons.forEach(button => {
+    button.classList.remove('active');
+    if (button.onclick.toString().includes(page)) {
+      button.classList.add('active');
+    }
+  });
 }
 
 // Profile page setup
@@ -65,7 +75,6 @@ async function setupProfilePage() {
   try {
     const user = await getProfile();
     
-    // Set up form fields
     const nameInput = document.getElementById('profileName');
     const bioInput = document.getElementById('profileBio');
     const pictureInput = document.getElementById('profilePicture');
@@ -75,7 +84,6 @@ async function setupProfilePage() {
     bioInput.value = user.bio || '';
     preview.src = user.image_url || 'https://via.placeholder.com/150';
 
-    // Handle image preview
     pictureInput.addEventListener('change', (e) => {
       const file = e.target.files[0];
       if (file) {
@@ -85,7 +93,6 @@ async function setupProfilePage() {
       }
     });
 
-    // Handle form submission
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
       const saveButton = form.querySelector('button[type="submit"]');
@@ -113,29 +120,69 @@ async function setupProfilePage() {
   }
 }
 
-// Theme functions
-function toggleDarkMode() {
-  const darkMode = document.body.classList.toggle('dark-mode');
-  localStorage.setItem('darkMode', darkMode);
+// Home page setup
+async function setupHomePage() {
+  const form = document.getElementById('postForm');
+  if (!form) return;
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const submitButton = form.querySelector('button[type="submit"]');
+    const text = document.getElementById('postText').value.trim();
+    const imageFile = document.getElementById('postImage').files[0];
+
+    if (!text) return;
+
+    try {
+      submitButton.disabled = true;
+      submitButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Posting...';
+
+      await createPost({
+        text,
+        image: imageFile
+      });
+
+      form.reset();
+      showToast('Post created successfully');
+      await renderPosts();
+    } catch (error) {
+      showToast(error.message, 'error');
+    } finally {
+      submitButton.disabled = false;
+      submitButton.innerHTML = 'Post';
+    }
+  });
+
+  await renderPosts();
 }
 
-function changeColorScheme() {
-  const select = document.getElementById('colorScheme');
-  const scheme = select.value;
-  
-  // Remove all existing color scheme classes
-  document.body.classList.remove(
-    'default-scheme',
-    'red-scheme',
-    'blue-scheme',
-    'green-scheme',
-    'purple-scheme',
-    'modern-scheme'
-  );
-  
-  // Add the new color scheme class
-  document.body.classList.add(`${scheme}-scheme`);
-  localStorage.setItem('colorScheme', scheme);
+async function renderPosts() {
+  const container = document.getElementById('postsContainer');
+  if (!container) return;
+
+  try {
+    const posts = await getPosts();
+    container.innerHTML = '';
+
+    posts.forEach(post => {
+      const div = document.createElement('div');
+      div.className = 'feed-item';
+      
+      div.innerHTML = `
+        <img class="profile-pic" src="${post.author.image_url || 'https://via.placeholder.com/50'}" alt="${post.author.name}">
+        <div class="post-content">
+          <h3>${post.author.name}</h3>
+          <p>${post.text}</p>
+          ${post.image_url ? `<img src="${post.image_url}" class="post-image" alt="Post image">` : ''}
+          <small>${formatRelativeTime(post.created_at)}</small>
+        </div>
+      `;
+      
+      container.appendChild(div);
+    });
+  } catch (error) {
+    showToast(error.message, 'error');
+  }
 }
 
 // Initialize the app
@@ -175,9 +222,30 @@ if (document.readyState === 'loading') {
 
 // Make functions available globally for inline event handlers
 window.loadContent = loadContent;
-window.toggleDarkMode = toggleDarkMode;
-window.changeColorScheme = changeColorScheme;
 window.logout = logout;
+
+// Theme functions
+window.toggleDarkMode = function() {
+  const darkMode = document.body.classList.toggle('dark-mode');
+  localStorage.setItem('darkMode', darkMode);
+};
+
+window.changeColorScheme = function() {
+  const select = document.getElementById('colorScheme');
+  const scheme = select.value;
+  
+  document.body.classList.remove(
+    'default-scheme',
+    'red-scheme',
+    'blue-scheme',
+    'green-scheme',
+    'purple-scheme',
+    'modern-scheme'
+  );
+  
+  document.body.classList.add(`${scheme}-scheme`);
+  localStorage.setItem('colorScheme', scheme);
+};
 
 // Export necessary functions for module imports
 export {
