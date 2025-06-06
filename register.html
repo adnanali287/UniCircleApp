@@ -46,15 +46,13 @@
         id="password" 
         placeholder="Password" 
         required 
-        minlength="8"
+        minlength="6"
         style="padding: 0.9rem; font-size: 1rem; border: 1px solid #ccc; border-radius: 10px;" 
       />
       <div style="font-size: 0.8rem; color: #666;">
         Password must:
         <ul style="margin: 0.5rem 0 0 1.2rem; padding: 0;">
-          <li>Be at least 8 characters long</li>
-          <li>Include at least one number</li>
-          <li>Include at least one letter</li>
+          <li>Be at least 6 characters long</li>
         </ul>
       </div>
       <button type="submit" style="background-color: #7b4eff; color: white; padding: 0.9rem; font-size: 1rem; border: none; border-radius: 10px; cursor: pointer;">
@@ -90,13 +88,8 @@
         return;
       }
       
-      if (password.length < 8) {
-        message.textContent = 'Password must be at least 8 characters';
-        return;
-      }
-      
-      if (!password.match(/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/)) {
-        message.textContent = 'Password must contain at least one letter and one number';
+      if (password.length < 6) {
+        message.textContent = 'Password must be at least 6 characters';
         return;
       }
       
