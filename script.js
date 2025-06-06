@@ -248,5 +248,6 @@ export {
   loadContent,
   toggleDarkMode,
   changeColorScheme,
-  logout
+  logout,
+  initApp // Added initApp to exports
 };
